@@ -1,6 +1,11 @@
 from typing import Any, Dict, Optional
 
-from pydantic import BaseSettings, PostgresDsn, validator
+from pydantic import BaseSettings, validator, AnyUrl
+
+
+class PostgresDsn(AnyUrl):
+    allowed_schemes = {'postgres', 'postgresql', 'postgresql+asyncpg'}
+    user_required = True
 
 
 class Settings(BaseSettings):
