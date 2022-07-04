@@ -2,6 +2,7 @@ import typing
 from datetime import datetime
 from decimal import Decimal
 
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSessionTransaction
 
 from services.database.models.product import Product
@@ -29,3 +30,16 @@ class ProductRepository(Base):
             await session.commit()
             await session.refresh(product)
             return product
+
+    async def all_product(self) -> typing.List[Model]:
+        async with self._transaction:
+            session = self.get_session()
+            result = await session.execute(select(self.model))
+            return result.scalars().all()
+
+    async def search_product(self, value: str) -> typing.List[Model]:
+        async with self._transaction:
+            session = self.get_session()
+            result = await session.execute(
+                select(self.model).order_by(self.model.name).filter(self.model.name == value))
+            return result.scalars().all()

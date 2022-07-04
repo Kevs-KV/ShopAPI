@@ -11,3 +11,13 @@ router = APIRouter()
 async def product_create(product: ProductDTO = ProductBodySpec.item, product_crud=Depends(ProductRepository)):
     await product_crud.add_product(**product.dict(exclude_unset=True, exclude_none=True))
     return Response(status_code=201)
+
+
+@router.get('/product/all/')
+async def product_all(product_crud=Depends(ProductRepository)):
+    return await product_crud.all_product()
+
+
+@router.get('/product/search/')
+async def product_search(value: str, product_crud=Depends(ProductRepository)):
+    return await product_crud.search_product(value)
