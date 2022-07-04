@@ -2,31 +2,30 @@ import typing
 from datetime import datetime
 from decimal import Decimal
 
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSessionTransaction
 
-from services.database.models.product import ColorEnum, Product
-from services.database.session import get_session
+from services.database.models.product import Product
+from services.database.repositories.base import Base
+from services.database.schemas.product import ProductDTO
 
 Model = typing.TypeVar("Model")
+TransactionContext = typing.AsyncContextManager[AsyncSessionTransaction]
 
-class ProductRepository:
+
+class ProductRepository(Base):
     model = Product
-
-    async def _session(self):
-        return await get_session().begin()
-
+    DTO = ProductDTO
 
     async def add_product(self,
                           name: str,
                           unit_price: typing.Union[float, Decimal],
-                          color: ColorEnum,
-                          product_id: typing.Optional[int] = None,
                           description: typing.Optional[str] = None,
-                          created_at: typing.Optional[datetime] = None
+                          created_at: typing.Optional[datetime] = None,
                           ) -> Model:
-        print(locals())
-        product = Product(locals())
-        self._session.add(product)
-        await self._session.commit()
-        await self._session.refresh(product)
-        return product.from_orm(product)
+        product = Product(name=name, unit_price=unit_price, description=description, created_at=created_at)
+        async with self._transaction:
+            session = self.get_session()
+            session.add(product)
+            await session.commit()
+            await session.refresh(product)
+            return product
