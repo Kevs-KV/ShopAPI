@@ -4,17 +4,15 @@ from typing import Any
 import uvicorn
 from fastapi import FastAPI
 
-from api.v1.endpoints.product import router
+from api.v1.api import api_router
 from config.settings import settings
 from services.database.models.base import Base
 from services.database.session import engine
 
-app = FastAPI()
-
 
 def app_factory() -> FastAPI:
     app = FastAPI()
-    app.include_router(router)
+    app.include_router(api_router)
     app.state.config = settings
     return app
 
