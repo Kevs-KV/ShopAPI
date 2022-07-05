@@ -1,3 +1,4 @@
+import secrets
 from typing import Any, Dict, Optional
 
 from pydantic import BaseSettings, validator, AnyUrl
@@ -27,6 +28,10 @@ class Settings(BaseSettings):
             host=values.get("POSTGRES_SERVER"),
             path=f"/{values.get('POSTGRES_DB') or ''}",
         )
+
+    API_V1_STR: str = ""
+    SECRET_KEY: str = secrets.token_urlsafe(32)
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
 
     class Config:
         case_sensitive = True
