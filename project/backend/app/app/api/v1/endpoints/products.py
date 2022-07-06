@@ -25,3 +25,8 @@ async def product_all(product_crud=Depends(ProductRepository)):
 @router.get('/search/')
 async def product_search(value: str, product_crud=Depends(ProductRepository)):
     return await product_crud.search_product(value)
+
+
+@router.delete('/delete/')
+async def product_search(product_id: int, product_crud=Depends(ProductRepository)):
+    return await product_crud.delete_product(product_id)

@@ -2,11 +2,11 @@ import typing
 from datetime import datetime
 from decimal import Decimal
 
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from sqlalchemy.ext.asyncio import AsyncSessionTransaction
 
 from services.database.models.product import Product
-from services.database.repositories.base import Base
+from services.database.repositories.base import Base, ASTERISK
 from services.database.schemas.product import ProductDTO
 
 Model = typing.TypeVar("Model")
@@ -43,3 +43,11 @@ class ProductRepository(Base):
             result = await session.execute(
                 select(self.model).order_by(self.model.name).filter(self.model.name == value))
             return result.scalars().all()
+
+    async def delete_product(self, product_id: int) -> typing.List[Model]:
+        async with self._transaction:
+            session = self.get_session()
+            stmt = delete(self.model).where(self.model.id == product_id).returning(ASTERISK)
+            result = (await session.execute(stmt)).mappings().all()
+            await session.commit()
+        return list(map(self._convert_to_model, result))
