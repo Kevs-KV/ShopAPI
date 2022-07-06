@@ -8,7 +8,7 @@ from services.database.session import engine
 
 Model = typing.TypeVar("Model")
 TransactionContext = typing.AsyncContextManager[AsyncSessionTransaction]
-
+ASTERISK = "*"
 
 class Base:
     model: typing.ClassVar[typing.Type[Model]]
@@ -25,3 +25,6 @@ class Base:
 
     def get_session(self) -> AsyncSession:
         return self.__session()
+
+    def _convert_to_model(self, kwargs) -> Model:
+        return self.model(**kwargs)
