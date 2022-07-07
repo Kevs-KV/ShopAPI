@@ -17,11 +17,10 @@ class DependencyApplicationBuilder:
         db_components = DatabaseComponents(self._settings.SQLALCHEMY_DATABASE_URI)
         self.app.state.db_components = db_components
         self.app.state.config = self._settings
-        self.app.dependency_overrides[UserRepositoryDependencyMarker] = lambda: UserRepository(db_components.sessionmaker)
-        self.app.dependency_overrides[ProductRepositoryDependencyMarker] = lambda: ProductRepository(db_components.sessionmaker)
-        #     UserRepositoryDependencyMarker: lambda: UserRepository(db_components.sessionmaker),
-        #     ProductRepositoryDependencyMarker: lambda: ProductRepository(db_components.sessionmaker),
-        # })
+        self.app.dependency_overrides.update({
+            UserRepositoryDependencyMarker: lambda: UserRepository(db_components.sessionmaker),
+            ProductRepositoryDependencyMarker: lambda: ProductRepository(db_components.sessionmaker),
+        })
 
 
 class ApplicationBuilder:
