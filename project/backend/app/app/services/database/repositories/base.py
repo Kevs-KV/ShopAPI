@@ -2,17 +2,17 @@ import contextlib
 import typing
 
 from sqlalchemy.ext.asyncio import AsyncSessionTransaction, AsyncSession
-from sqlalchemy.orm import sessionmaker
-
-from services.database.session import engine
 
 Model = typing.TypeVar("Model")
 TransactionContext = typing.AsyncContextManager[AsyncSessionTransaction]
 ASTERISK = "*"
 
+
 class Base:
     model: typing.ClassVar[typing.Type[Model]]
-    __session = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
+
+    def __init__(self, session):
+        self.__session = session
 
     @contextlib.asynccontextmanager
     async def __transaction(self) -> typing.AsyncGenerator:
