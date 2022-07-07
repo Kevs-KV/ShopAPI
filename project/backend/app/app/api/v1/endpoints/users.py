@@ -2,6 +2,7 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException
 
+from api.v1.dependencies.database_marker import UserRepositoryDependencyMarker
 from services.database.repositories.user_repository import UserRepository
 from services.database.schemas.user import UserCreate, User
 
@@ -10,7 +11,7 @@ router = APIRouter()
 
 @router.post("/", response_model=User)
 async def create_user(user_in: UserCreate,
-                      user_crud=Depends(UserRepository),
+                      user_crud: UserRepository = Depends(UserRepositoryDependencyMarker),
                       ) -> Any:
     user = await user_crud.get_by_email(email=user_in.email)
     if user:
@@ -23,6 +24,6 @@ async def create_user(user_in: UserCreate,
 
 
 @router.get("/{email}")
-async def get_user(email: str, user_crud=Depends(UserRepository)):
+async def get_user(email: str, user_crud: UserRepository = Depends(UserRepositoryDependencyMarker)):
     user = await user_crud.get_by_email(email)
     return user

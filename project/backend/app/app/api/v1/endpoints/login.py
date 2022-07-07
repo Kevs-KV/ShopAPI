@@ -4,7 +4,9 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 
+from api.v1.dependencies.database_marker import ProductRepositoryDependencyMarker, UserRepositoryDependencyMarker
 from config.settings import settings
+from services.database.repositories.product_repository import ProductRepository
 from services.database.repositories.user_repository import UserRepository
 from services.database.schemas.token import Token
 from services.security.jwt import create_access_token
@@ -14,7 +16,7 @@ router = APIRouter()
 
 @router.post("/login/access-token", response_model=Token)
 async def login_access_token(
-        user_crud=Depends(UserRepository), form_data: OAuth2PasswordRequestForm = Depends()
+        user_crud: UserRepository = Depends(UserRepositoryDependencyMarker), form_data: OAuth2PasswordRequestForm = Depends()
 ) -> Any:
     user = await user_crud.authenticate(email=form_data.username, password=form_data.password)
     if not user:
