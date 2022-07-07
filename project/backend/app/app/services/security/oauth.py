@@ -4,6 +4,7 @@ from jose import jwt
 from pydantic import ValidationError
 from starlette import status
 
+from api.v1.dependencies.database_marker import UserRepositoryDependencyMarker
 from config.settings import settings
 from services.database.models.user import User
 from services.database.repositories.user_repository import UserRepository
@@ -16,7 +17,7 @@ reusable_oauth2 = OAuth2PasswordBearer(
 
 
 async def get_current_user(
-        product_crud=Depends(UserRepository), token: str = Depends(reusable_oauth2)
+        user_crud: UserRepository = Depends(UserRepositoryDependencyMarker), token: str = Depends(reusable_oauth2)
 ) -> User:
     try:
         payload = jwt.decode(
@@ -28,7 +29,7 @@ async def get_current_user(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Could not validate credentials",
         )
-    user = await product_crud.get_user_id(id=token_data.sub)
+    user = await user_crud.get_user_id(id=token_data.sub)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
