@@ -6,28 +6,21 @@ from fastapi import FastAPI
 
 from api.v1.api import api_router
 from config.settings import settings
-from services.database.models.base import Base
-from services.database.session import engine
+from utils.application_builder.installation import ApplicationBuilder, DependencyApplicationBuilder
 
 
 def app_factory() -> FastAPI:
     app = FastAPI()
     app.include_router(api_router)
-    app.state.config = settings
+    app = ApplicationBuilder(DependencyApplicationBuilder(app, settings)).build_app()
     return app
 
 
-async def init_models():
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
-        await conn.run_sync(Base.metadata.create_all)
-    await engine.dispose()
-
-
 def run_application(**kwargs: Any) -> None:
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(init_models())
     app = app_factory()
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(app.state.db_components.init_models())
+    loop.stop()
     uvicorn.run(app, **kwargs)
 
 
