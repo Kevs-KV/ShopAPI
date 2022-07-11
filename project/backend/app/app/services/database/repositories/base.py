@@ -86,9 +86,9 @@ class Base:
         session = await self.get_session()
         async with self._transaction:
             stmt = delete(self.model).where(order == value).returning(ASTERISK)
-            result = (await session.execute(stmt)).mappings().all()
+            result = (await session.execute(stmt)).mappings().first()
             await session.commit()
-        return self._convert_to_model(result)
+        return self._convert_to_model(typing.cast(typing.Dict[str, typing.Any], result))
 
     async def _filter(self, order: typing.Any, value: typing.Any) -> Model:
         session = await self.get_session()
