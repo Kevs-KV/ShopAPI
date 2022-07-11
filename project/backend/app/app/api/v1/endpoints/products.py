@@ -26,7 +26,7 @@ async def product_all(product_crud: ProductRepository = Depends(ProductRepositor
 
 @router.get('/search/')
 async def product_search(value: str, product_crud: ProductRepository = Depends(ProductRepositoryDependencyMarker)):
-    return await product_crud.search_product(value)
+    return await product_crud.search_product_by_name(value)
 
 
 @router.delete('/delete/')
