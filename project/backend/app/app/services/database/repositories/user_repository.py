@@ -28,6 +28,9 @@ class UserRepository(Base):
         del payload['password']
         return await self._insert(**payload)
 
+    async def delete_user(self, email: str):
+        return await self._delete(self.model.email, email)
+
     async def authenticate(self, *, email: str, password: str) -> Optional[User]:
         user = await self.get_by_email(email)
         if not user:
