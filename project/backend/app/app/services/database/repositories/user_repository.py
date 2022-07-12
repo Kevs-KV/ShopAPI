@@ -13,6 +13,10 @@ from utils.database_utils import filter_payload
 class UserRepository(Base):
     model = User
 
+    def __init__(self, session, password_hasher):
+        super().__init__(session)
+        self._password_hasher = password_hasher
+
     async def get_user(self, name: str) -> Model:
         return await self._select_one(self.model.name == name)
 
@@ -24,7 +28,7 @@ class UserRepository(Base):
 
     async def create_user(self, obj_in: UserCreate) -> Model:
         payload = obj_in.__dict__
-        payload['hashed_password'] = get_password_hash(obj_in.password)
+        payload['hashed_password'] = self._password_hasher.get_password_hash(obj_in.password)
         del payload['password']
         return await self._insert(**payload)
 
@@ -35,6 +39,6 @@ class UserRepository(Base):
         user = await self.get_by_email(email)
         if not user:
             return None
-        if not verify_password(password, user.hashed_password):
+        if not self._password_hasher.verify_password(password, user.hashed_password):
             return None
         return user
