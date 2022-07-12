@@ -1,10 +1,12 @@
 from fastapi import FastAPI
+from passlib.context import CryptContext
 
 from api.v1.dependencies.database_marker import UserRepositoryDependencyMarker, ProductRepositoryDependencyMarker
 from config.settings import settings
 from services.database.repositories.product_repository import ProductRepository
 from services.database.repositories.user_repository import UserRepository
 from services.database.session import DatabaseComponents
+from utils.password_hashing import PasswordHasher
 
 
 class DependencyApplicationBuilder:
@@ -15,10 +17,11 @@ class DependencyApplicationBuilder:
 
     def configure_application_state(self) -> None:
         db_components = DatabaseComponents(self._settings.SQLALCHEMY_DATABASE_URI)
+        password_hasher = PasswordHasher(pwd_context=CryptContext(schemes=["bcrypt"], deprecated="auto"))
         self.app.state.db_components = db_components
         self.app.state.config = self._settings
         self.app.dependency_overrides.update({
-            UserRepositoryDependencyMarker: lambda: UserRepository(db_components.sessionmaker),
+            UserRepositoryDependencyMarker: lambda: UserRepository(db_components.sessionmaker, password_hasher),
             ProductRepositoryDependencyMarker: lambda: ProductRepository(db_components.sessionmaker),
         })
 
