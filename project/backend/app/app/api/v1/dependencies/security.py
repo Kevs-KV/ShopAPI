@@ -1,0 +1,2 @@
+class JWTAuthenticationMarker:
+    pass
