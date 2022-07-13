@@ -2,10 +2,12 @@ from fastapi import FastAPI
 from passlib.context import CryptContext
 
 from api.v1.dependencies.database_marker import UserRepositoryDependencyMarker, ProductRepositoryDependencyMarker
+from api.v1.dependencies.security import JWTAuthenticationMarker
 from config.settings import settings
 from services.database.repositories.product_repository import ProductRepository
 from services.database.repositories.user_repository import UserRepository
 from services.database.session import DatabaseComponents
+from services.security.jwt import JWTAuthenticationService
 from utils.password_hashing import PasswordHasher
 
 
@@ -23,7 +25,12 @@ class DependencyApplicationBuilder:
         self.app.dependency_overrides.update({
             UserRepositoryDependencyMarker: lambda: UserRepository(db_components.sessionmaker, password_hasher),
             ProductRepositoryDependencyMarker: lambda: ProductRepository(db_components.sessionmaker),
-        })
+            JWTAuthenticationMarker: lambda: JWTAuthenticationService(
+                user_crud=UserRepository(db_components.sessionmaker, password_hasher),
+                password_hasher=password_hasher,
+                secret_key=self._settings.SECRET_KEY,
+                algorithm="HS256",
+                token_expires_in_minutes=self._settings.ACCESS_TOKEN_EXPIRE_MINUTES)})
 
 
 class ApplicationBuilder:

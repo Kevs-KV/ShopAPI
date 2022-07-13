@@ -1,33 +1,38 @@
 from datetime import datetime, timedelta
-from typing import Any, Union
+from typing import NewType, Dict, Any
 
 import jwt
-from passlib.context import CryptContext
-
-from config.settings import settings
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+from fastapi.security import OAuth2PasswordRequestForm
 
 ALGORITHM = "HS256"
 
-
-def create_access_token(
-        subject: Union[str, Any], expires_delta: timedelta = None
-) -> str:
-    if expires_delta:
-        expire = datetime.utcnow() + expires_delta
-    else:
-        expire = datetime.utcnow() + timedelta(
-            minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
-        )
-    to_encode = {"exp": expire, "sub": str(subject)}
-    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
+JWTToken = NewType("JWTToken", str)
 
 
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(plain_password, hashed_password)
+class JWTAuthenticationService:
 
+    def __init__(self, user_crud, password_hasher, secret_key, algorithm, token_expires_in_minutes):
+        self._token_expires_in_minutes = token_expires_in_minutes
+        self._secret_key = secret_key
+        self._algorithm = algorithm
+        self._user_crud = user_crud
+        self._password_hasher = password_hasher
 
-def get_password_hash(password: str) -> str:
-    return pwd_context.hash(password)
+    async def authenticate_user(self, form_data: OAuth2PasswordRequestForm):
+        user = await self._user_crud.get_by_email(form_data.username)
+        if not user:
+            return None
+        if not self._password_hasher.verify_password(form_data.password, user.hashed_password):
+            return None
+        return JWTToken(self._generate_jwt_token({
+            "sub": form_data.username,
+            "scopes": form_data.scopes,
+        }))
+
+    def _generate_jwt_token(self, token_payload: Dict[str, Any]) -> str:
+        token_payload = {
+            "exp": datetime.utcnow() + timedelta(self._token_expires_in_minutes),
+            **token_payload
+        }
+        filtered_payload = {k: v for k, v in token_payload.items() if v is not None}
+        return jwt.encode(filtered_payload, self._secret_key, algorithm=self._algorithm)
