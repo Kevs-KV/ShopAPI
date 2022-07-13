@@ -1,13 +1,6 @@
-from typing import Optional
-
-from pydantic import typing
-from sqlalchemy import select
-
 from services.database.models.user import User
 from services.database.repositories.base import Base, Model
 from services.database.schemas.user import UserCreate
-from services.security.jwt import verify_password, get_password_hash
-from utils.database_utils import filter_payload
 
 
 class UserRepository(Base):
@@ -34,11 +27,3 @@ class UserRepository(Base):
 
     async def delete_user(self, email: str):
         return await self._delete(self.model.email, email)
-
-    async def authenticate(self, *, email: str, password: str) -> Optional[User]:
-        user = await self.get_by_email(email)
-        if not user:
-            return None
-        if not self._password_hasher.verify_password(password, user.hashed_password):
-            return None
-        return user
