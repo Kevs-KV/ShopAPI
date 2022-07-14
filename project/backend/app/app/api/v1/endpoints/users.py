@@ -1,11 +1,11 @@
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Security
 
 from api.v1.dependencies.database_marker import UserRepositoryDependencyMarker
 from services.database.repositories.user_repository import UserRepository
 from services.database.schemas.user import UserCreate, User
-from services.security.oauth import get_current_active_superuser
+from services.security.jwt import JWTSecurityHead
 
 router = APIRouter()
 
@@ -30,8 +30,6 @@ async def get_user(email: str, user_crud: UserRepository = Depends(UserRepositor
     return user
 
 
-@router.delete('/delete/')
-async def delete_user(email: str, user_crud: UserRepository = Depends(UserRepositoryDependencyMarker),
-                      current_user: User = Depends(get_current_active_superuser)):
-    if current_user.is_active:
-        return await user_crud.delete_user(email)
+@router.delete('/delete/', dependencies=[Security(JWTSecurityHead(), scopes=['admin'])])
+async def delete_user(email: str, user_crud: UserRepository = Depends(UserRepositoryDependencyMarker)):
+    return await user_crud.delete_user(email)
