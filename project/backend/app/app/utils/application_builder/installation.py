@@ -1,9 +1,15 @@
+from typing import no_type_check
+
 from fastapi import FastAPI
 from passlib.context import CryptContext
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.middleware.cors import CORSMiddleware
+from starlette.middleware.sessions import SessionMiddleware
 
 from api.v1.dependencies.database_marker import UserRepositoryDependencyMarker, ProductRepositoryDependencyMarker
 from api.v1.dependencies.security import JWTAuthenticationMarker
 from config.settings import settings
+from middlewares.process_time_middleware import add_process_time_header
 from services.database.repositories.product_repository import ProductRepository
 from services.database.repositories.user_repository import UserRepository
 from services.database.session import DatabaseComponents
@@ -16,6 +22,15 @@ class DependencyApplicationBuilder:
     def __init__(self, app: FastAPI, config: settings):
         self.app = app
         self._settings = config
+
+
+    @no_type_check
+    def setup_middlewares(self):
+        self.app.add_middleware(BaseHTTPMiddleware, dispatch=add_process_time_header)
+        self.app.add_middleware(
+            middleware_class=SessionMiddleware,
+            secret_key="!secret"
+        )
 
     def configure_application_state(self) -> None:
         db_components = DatabaseComponents(self._settings.SQLALCHEMY_DATABASE_URI)
@@ -47,5 +62,6 @@ class ApplicationBuilder:
         self._build = new_builder
 
     def build_app(self) -> FastAPI:
+        self._build.setup_middlewares()
         self._build.configure_application_state()
         return self._build.app
