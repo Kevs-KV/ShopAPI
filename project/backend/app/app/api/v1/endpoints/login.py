@@ -21,6 +21,6 @@ async def login_access_token(
     except:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail='no auth',
+            detail='Incorrect login or password',
             headers={"WWW-Authenticate": "Bearer"},
         )
