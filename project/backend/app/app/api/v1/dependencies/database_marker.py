@@ -4,3 +4,7 @@ class UserRepositoryDependencyMarker:
 
 class ProductRepositoryDependencyMarker:
     pass
+
+
+class CategoryRepositoryDependencyMarker:
+    pass
