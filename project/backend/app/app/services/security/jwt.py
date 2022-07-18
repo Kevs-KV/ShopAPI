@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import NewType, Dict, Any
+from typing import NewType, Any
 
 from fastapi import HTTPException, Depends
 from fastapi.security import OAuth2PasswordRequestForm
@@ -9,9 +9,9 @@ from pydantic import ValidationError
 from starlette import status
 
 from api.v1.dependencies.security import JWTSecurityMarker
-from services.database.models.user import User
-from services.database.repositories.user_repository import UserRepository
-from services.database.schemas.token import TokenPayload
+from services.database.models.user.user import User
+from services.database.repositories.user.user_repository import UserRepository
+from services.database.schemas.security.token import TokenPayload
 from services.security.oauth import reusable_oauth2
 from utils.password_hashing import PasswordHasher
 

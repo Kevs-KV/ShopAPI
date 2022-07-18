@@ -3,8 +3,8 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, Security
 
 from api.v1.dependencies.database_marker import UserRepositoryDependencyMarker
-from services.database.repositories.user_repository import UserRepository
-from services.database.schemas.user import UserCreate, User
+from services.database.repositories.user.user_repository import UserRepository
+from services.database.schemas.user.user import UserCreate, User
 from services.security.jwt import JWTSecurityHead
 
 router = APIRouter()

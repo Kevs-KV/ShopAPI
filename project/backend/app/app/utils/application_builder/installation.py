@@ -10,8 +10,8 @@ from api.v1.dependencies.database_marker import UserRepositoryDependencyMarker, 
 from api.v1.dependencies.security import JWTAuthenticationMarker, JWTSecurityMarker
 from config.settings import settings
 from middlewares.process_time_middleware import add_process_time_header
-from services.database.repositories.product_repository import ProductRepository
-from services.database.repositories.user_repository import UserRepository
+from services.database.repositories.product.product_repository import ProductRepository
+from services.database.repositories.user.user_repository import UserRepository
 from services.database.session import DatabaseComponents
 from services.security.jwt import JWTAuthenticationService, JWTSecurityService
 from utils.password_hashing import PasswordHasher

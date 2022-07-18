@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, Security
 from fastapi.responses import Response
 
 from api.v1.dependencies.database_marker import ProductRepositoryDependencyMarker
-from services.database.repositories.product_repository import ProductRepository
-from services.database.schemas.product import ProductDTO, ProductBodySpec
+from services.database.repositories.product.product_repository import ProductRepository
+from services.database.schemas.product.product import ProductDTO, ProductBodySpec
 from services.security.jwt import JWTSecurityHead
 
 router = APIRouter()

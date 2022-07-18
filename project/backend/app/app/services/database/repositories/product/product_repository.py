@@ -2,12 +2,11 @@ import typing
 from datetime import datetime
 from decimal import Decimal
 
-from sqlalchemy import select, delete
 from sqlalchemy.ext.asyncio import AsyncSessionTransaction
 
-from services.database.models.product import Product
-from services.database.repositories.base import Base, ASTERISK
-from services.database.schemas.product import ProductDTO
+from services.database.models.product.product import Product
+from services.database.repositories.base import Base
+from services.database.schemas.product.product import ProductDTO
 from utils.database_utils import filter_payload
 
 Model = typing.TypeVar("Model")
