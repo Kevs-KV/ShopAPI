@@ -27,6 +27,6 @@ async def product_search(value: str, product_crud: ProductRepository = Depends(P
     return await product_crud.search_product_by_name(value)
 
 
-@router.delete('/delete/')
+@router.delete('/delete/', dependencies=[Security(JWTSecurityHead(), scopes=['admin'])])
 async def product_delete(product_id: int, product_crud: ProductRepository = Depends(ProductRepositoryDependencyMarker)):
     return await product_crud.delete_product(product_id)

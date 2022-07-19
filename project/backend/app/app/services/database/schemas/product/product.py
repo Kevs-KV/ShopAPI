@@ -14,6 +14,7 @@ class ProductBodySpec:
             "name": "Apple MacBook 15",
             "unit_price": 7000,
             "description": "Light and fast laptop, Light and fast laptop, Light and fast laptop, Light and fast laptop",
+            'category_id': '1'
         },
     )
 
@@ -24,6 +25,7 @@ class ProductDTO(BaseModel):
     unit_price: float
     description: str
     created_at: Optional[datetime.datetime] = None
+    category_id: int
 
     class Config:
         orm_mode = True
@@ -37,3 +39,4 @@ class ProductDTO(BaseModel):
 
     def patch_enum_values(self) -> None:
         self.Config.use_enum_values = False
+
