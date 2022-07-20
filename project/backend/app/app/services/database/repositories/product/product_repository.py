@@ -20,6 +20,7 @@ class ProductRepository(Base):
     async def add_product(self, *,
                           name: str,
                           category_id: int,
+                          brand_id: int,
                           unit_price: typing.Union[float, Decimal],
                           product_id: typing.Optional[int] = None,
                           description: typing.Optional[str] = None,

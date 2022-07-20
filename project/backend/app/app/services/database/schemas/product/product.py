@@ -14,7 +14,8 @@ class ProductBodySpec:
             "name": "Apple MacBook 15",
             "unit_price": 7000,
             "description": "Light and fast laptop, Light and fast laptop, Light and fast laptop, Light and fast laptop",
-            'category_id': '1'
+            'category_id': '1',
+            'brand_id': '1',
         },
     )
 
@@ -26,6 +27,7 @@ class ProductDTO(BaseModel):
     description: str
     created_at: Optional[datetime.datetime] = None
     category_id: int
+    brand_id: int
 
     class Config:
         orm_mode = True

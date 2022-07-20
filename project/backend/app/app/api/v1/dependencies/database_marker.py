@@ -8,3 +8,7 @@ class ProductRepositoryDependencyMarker:
 
 class CategoryRepositoryDependencyMarker:
     pass
+
+
+class BrandRepositoryDependencyMarker:
+    pass
