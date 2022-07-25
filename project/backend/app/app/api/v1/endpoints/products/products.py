@@ -1,8 +1,10 @@
 from fastapi import APIRouter, Depends, Security
 from fastapi.responses import Response
 
-from api.v1.dependencies.database_marker import ProductRepositoryDependencyMarker
+from api.v1.dependencies.database_marker import ProductRepositoryDependencyMarker, CommentRepositoryDependencyMarker
+from services.database.repositories.product.comment_repositiry import CommentRepository
 from services.database.repositories.product.product_repository import ProductRepository
+from services.database.schemas.product.comment import CommentDTO, CommentBodySpec
 from services.database.schemas.product.product import ProductDTO, ProductBodySpec
 from services.security.jwt import JWTSecurityHead
 
@@ -15,6 +17,13 @@ async def product_create(
         product: ProductDTO = ProductBodySpec.item):
     await product_crud.add_product(**product.dict(exclude_unset=True, exclude_none=True))
     return Response(status_code=201)
+
+
+@router.post('/{product_id}/create/comment')
+async def product_add_comment(comment: CommentDTO = CommentBodySpec.item,
+                              user=Security(JWTSecurityHead(), scopes=['admin', 'user']),
+                              comment_crud: CommentRepository = Depends(CommentRepositoryDependencyMarker)):
+    return await comment_crud.add_comment(comment, user.id)
 
 
 @router.get('/all/')
