@@ -9,3 +9,6 @@ class CommentRepository(Base):
         payload = obj_in.__dict__
         payload['user_id'] = user_id
         return await self._insert(**payload)
+
+    async def delete_comment(self, comment_id: int):
+        return await self._delete(self.model.id, comment_id)
