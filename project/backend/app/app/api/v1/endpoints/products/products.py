@@ -31,6 +31,11 @@ async def product_all(product_crud: ProductRepository = Depends(ProductRepositor
     return await product_crud.all_product()
 
 
+@router.get('/{product_id}/')
+async def product_get(product_id: int, product_crud: ProductRepository = Depends(ProductRepositoryDependencyMarker)):
+    return await product_crud.detail_product(product_id)
+
+
 @router.get('/search/')
 async def product_search(value: str, product_crud: ProductRepository = Depends(ProductRepositoryDependencyMarker)):
     return await product_crud.search_product_by_name(value)
