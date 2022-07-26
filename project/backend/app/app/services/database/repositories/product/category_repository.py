@@ -24,9 +24,4 @@ class CategoryRepository(Base):
         return await self._delete(self.model.id, category_id)
 
     async def get_category_product(self, category_id: int) -> Model:
-        session = await self.get_session()
-        async with self._transaction:
-            result = await session.execute(
-                select(self.model).order_by(self.model.id).filter(self.model.id == category_id).options(
-                    selectinload(self.model.products)))
-        return typing.cast(Model, result.scalars().first())
+        return await self._detail(self.model.id, category_id, self.model.products)
