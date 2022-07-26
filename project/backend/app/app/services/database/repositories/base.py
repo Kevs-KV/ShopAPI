@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 
 from sqlalchemy import delete, insert, lambda_stmt, select, exists, func, update
 from sqlalchemy.ext.asyncio import AsyncSessionTransaction, AsyncSession
+from sqlalchemy.orm import selectinload, sessionmaker
 from sqlalchemy.sql import Executable
 
 Model = typing.TypeVar("Model")
@@ -13,7 +14,7 @@ ASTERISK = "*"
 class Base:
     model: typing.ClassVar[typing.Type[Model]]
 
-    def __init__(self, session):
+    def __init__(self, session: typing.Union[sessionmaker, AsyncSession]) -> None:
         self._session = session
 
     @asynccontextmanager
@@ -22,7 +23,7 @@ class Base:
             yield transaction
 
     @property
-    def _transaction(self):
+    def _transaction(self) -> TransactionContext:
         return self.__transaction()
 
     async def get_session(self) -> AsyncSession:
@@ -96,6 +97,14 @@ class Base:
             result = await session.execute(
                 select(self.model).order_by(order).filter(order == value))
         return result.scalars().all()
+
+    async def _detail(self, order: typing.Any, value: typing.Any, inload: typing.Any) -> Model:
+        session = await self.get_session()
+        async with self._transaction:
+            result = await session.execute(
+                select(self.model).order_by(order).filter(order == value).options(
+                    selectinload(inload)))
+        return typing.cast(Model, result.scalars().first())
 
     async def _count(self) -> int:
         session = await self.get_session()
