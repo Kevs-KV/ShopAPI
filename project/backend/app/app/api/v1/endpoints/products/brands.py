@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Security
+from fastapi import APIRouter, Depends, Security, HTTPException
 from fastapi.responses import Response
 
 from api.v1.dependencies.database_marker import CategoryRepositoryDependencyMarker, BrandRepositoryDependencyMarker
@@ -25,4 +25,9 @@ async def brand_get_all(brand_crud: BrandRepository = Depends(BrandRepositoryDep
 
 @router.delete('/delete/', dependencies=[Security(JWTSecurityHead(), scopes=['admin'])])
 async def brand_delete(brand_id: int, brand_crud: BrandRepository = Depends(BrandRepositoryDependencyMarker)):
-    return await brand_crud.delete_brand(brand_id)
+    try:
+        return await brand_crud.delete_brand(brand_id)
+    except TypeError:
+        raise HTTPException(
+            status_code=404, detail=f"There isn't entry with id={brand_id}"
+        )

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Security
+from fastapi import APIRouter, Depends, Security, HTTPException
 from fastapi.responses import Response
 
 from api.v1.dependencies.database_marker import CategoryRepositoryDependencyMarker
@@ -23,7 +23,13 @@ async def categoty_get_all(category_crud: CategoryRepository = Depends(CategoryR
 
 @router.delete('/delete/', dependencies=[Security(JWTSecurityHead(), scopes=['admin'])])
 async def category_delete(category_id: int, category_crud: CategoryRepository = Depends(CategoryRepositoryDependencyMarker)):
-    return await category_crud.delete_category(category_id)
+    try:
+        return await category_crud.delete_category(category_id)
+    except TypeError:
+        raise HTTPException(
+            status_code=404, detail=f"There isn't entry with id={category_id}"
+        )
+
 
 
 @router.get('/{category_id}/')
