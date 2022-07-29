@@ -1,8 +1,5 @@
 import typing
 
-from sqlalchemy import select
-from sqlalchemy.orm import selectinload
-
 from services.database.models.product.category import Category
 from services.database.repositories.base import Base, Model
 from services.database.schemas.product.category import CategoryDTO
@@ -25,3 +22,6 @@ class CategoryRepository(Base):
 
     async def get_category_product(self, category_id: int) -> Model:
         return await self._detail(self.model.id, category_id, self.model.products)
+
+    async def update_category(self, category_id: int, new_name: str) -> None:
+        return await self._update(self.model.id == category_id, name=new_name)
