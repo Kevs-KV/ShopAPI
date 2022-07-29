@@ -1,11 +1,12 @@
 from fastapi import APIRouter, Depends, Security, HTTPException
 from fastapi.responses import Response
+from sqlalchemy.exc import IntegrityError
 
 from api.v1.dependencies.database_marker import ProductRepositoryDependencyMarker, CommentRepositoryDependencyMarker
 from services.database.repositories.product.comment_repositiry import CommentRepository
 from services.database.repositories.product.product_repository import ProductRepository
 from services.database.schemas.product.comment import CommentDTO, CommentBodySpec
-from services.database.schemas.product.product import ProductDTO, ProductBodySpec
+from services.database.schemas.product.product import ProductDTO, ProductBodySpec, ProductUpdate
 from services.security.jwt import JWTSecurityHead
 
 router = APIRouter()
@@ -48,4 +49,16 @@ async def product_delete(product_id: int, product_crud: ProductRepository = Depe
     except TypeError:
         raise HTTPException(
             status_code=404, detail=f"There isn't entry with id={product_id}"
+        )
+
+
+@router.put('/{product_id}/update/')
+async def product_update(product_id: int, product: ProductUpdate = ProductBodySpec.item,
+                         product_crud: ProductRepository = Depends(ProductRepositoryDependencyMarker)):
+    try:
+        await product_crud.update_product(product_id, product)
+        return {"success": True, 'detail': f'product id={product_id} updated'}
+    except IntegrityError:
+        raise HTTPException(
+            status_code=404, detail=f"invalid data to update record id={product_id}"
         )

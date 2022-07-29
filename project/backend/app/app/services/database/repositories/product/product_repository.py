@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSessionTransaction
 
 from services.database.models.product.product import Product
 from services.database.repositories.base import Base
-from services.database.schemas.product.product import ProductDTO
+from services.database.schemas.product.product import ProductDTO, ProductUpdate
 from utils.database_utils import filter_payload
 
 Model = typing.TypeVar("Model")
@@ -40,3 +40,7 @@ class ProductRepository(Base):
 
     async def detail_product(self, product_id: int) -> Model:
         return await self._detail(self.model.id, product_id, self.model.comments)
+
+    async def update_product(self, product_id: int, product: ProductUpdate):
+        payload = product.__dict__
+        return await self._update(self.model.id == product_id, **payload)
