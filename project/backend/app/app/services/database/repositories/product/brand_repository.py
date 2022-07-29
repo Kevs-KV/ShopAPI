@@ -17,3 +17,6 @@ class BrandRepository(Base):
 
     async def delete_brand(self, brand_id):
         return await self._delete(self.model.id, brand_id)
+
+    async def update_brand(self, brand_id: int, new_name: str) -> None:
+        return await self._update(self.model.id == brand_id, name=new_name)
