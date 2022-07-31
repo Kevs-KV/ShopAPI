@@ -38,6 +38,9 @@ class ProductRepository(Base):
     async def delete_product(self, product_id: int) -> Model:
         return await self._delete(self.model.id, product_id)
 
+    async def get_product(self, product_id: int) -> Model:
+        return await self._select_one(self.model.id == product_id)
+
     async def detail_product(self, product_id: int) -> Model:
         return await self._detail(self.model.id, product_id, self.model.comments)
 
