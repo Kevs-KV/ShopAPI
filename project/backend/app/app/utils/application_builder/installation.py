@@ -7,12 +7,13 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
 from api.v1.dependencies.database_marker import UserRepositoryDependencyMarker, ProductRepositoryDependencyMarker, \
-    CategoryRepositoryDependencyMarker, BrandRepositoryDependencyMarker
+    CategoryRepositoryDependencyMarker, BrandRepositoryDependencyMarker, CommentRepositoryDependencyMarker
 from api.v1.dependencies.security import JWTAuthenticationMarker, JWTSecurityMarker
 from config.settings import settings
 from middlewares.process_time_middleware import add_process_time_header
 from services.database.repositories.product.brand_repository import BrandRepository
 from services.database.repositories.product.category_repository import CategoryRepository
+from services.database.repositories.product.comment_repositiry import CommentRepository
 from services.database.repositories.product.product_repository import ProductRepository
 from services.database.repositories.user.user_repository import UserRepository
 from services.database.session import DatabaseComponents
@@ -56,6 +57,7 @@ class DependencyApplicationBuilder:
             ProductRepositoryDependencyMarker: lambda: ProductRepository(db_components.sessionmaker),
             CategoryRepositoryDependencyMarker: lambda: CategoryRepository(db_components.sessionmaker),
             BrandRepositoryDependencyMarker: lambda: BrandRepository(db_components.sessionmaker),
+            CommentRepositoryDependencyMarker: lambda: CommentRepository(db_components.sessionmaker),
             JWTAuthenticationMarker: lambda: JWTAuthenticationService(
                 user_crud=UserRepository(db_components.sessionmaker, password_hasher),
                 password_hasher=password_hasher,

@@ -1,8 +1,5 @@
 import typing
 
-from sqlalchemy import select
-from sqlalchemy.orm import selectinload
-
 from services.database.models.product.category import Category
 from services.database.repositories.base import Base, Model
 from services.database.schemas.product.category import CategoryDTO
@@ -24,9 +21,7 @@ class CategoryRepository(Base):
         return await self._delete(self.model.id, category_id)
 
     async def get_category_product(self, category_id: int) -> Model:
-        session = await self.get_session()
-        async with self._transaction:
-            result = await session.execute(
-                select(self.model).order_by(self.model.id).filter(self.model.id == category_id).options(
-                    selectinload(self.model.products)))
-        return typing.cast(Model, result.scalars().first())
+        return await self._detail(self.model.id, category_id, self.model.products)
+
+    async def update_category(self, category_id: int, new_name: str) -> None:
+        return await self._update(self.model.id == category_id, name=new_name)

@@ -12,3 +12,7 @@ class CategoryRepositoryDependencyMarker:
 
 class BrandRepositoryDependencyMarker:
     pass
+
+
+class CommentRepositoryDependencyMarker:
+    pass

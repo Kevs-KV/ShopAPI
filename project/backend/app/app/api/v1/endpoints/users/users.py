@@ -32,4 +32,9 @@ async def get_user(email: str, user_crud: UserRepository = Depends(UserRepositor
 
 @router.delete('/delete/', dependencies=[Security(JWTSecurityHead(), scopes=['admin'])])
 async def delete_user(email: str, user_crud: UserRepository = Depends(UserRepositoryDependencyMarker)):
-    return await user_crud.delete_user(email)
+    try:
+        return await user_crud.delete_user(email)
+    except TypeError:
+        raise HTTPException(
+            status_code=404, detail=f"There isn't entry with email={email}"
+        )
