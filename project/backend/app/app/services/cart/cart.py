@@ -25,10 +25,8 @@ class Cart:
         else:
             self.cart[product_id]['quantity'] += quantity
 
-    def remove(self, product: Product):
-        product_id = str(product.id)
-        if product_id in self.cart:
-            del self.cart[product_id]
+    def remove(self, product_id: str):
+        del self.cart[product_id]
 
     def get_total_price(self):
         return sum(

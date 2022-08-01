@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from starlette.requests import Request
 
 from api.v1.dependencies.database_marker import ProductRepositoryDependencyMarker
@@ -9,7 +9,7 @@ router = APIRouter()
 
 
 @router.post('/add/')
-async def cart_add(request: Request, product_id: int, quntity=1,
+async def cart_add(request: Request, product_id: int, quntity: int = 1,
                    product_crud: ProductRepository = Depends(ProductRepositoryDependencyMarker)):
     cart = Cart(request)
     product = await product_crud.get_product(product_id)
@@ -23,3 +23,14 @@ async def cart_get(request: Request):
     values = cart.__dict__['cart']
     quantity = cart.__len__()
     return {'quantity': quantity, "cart": values}
+
+
+@router.delete('/delete/')
+async def cart_delete(request: Request, product_id: str):
+    cart = Cart(request)
+    if product_id in cart.__dict__['cart']:
+        cart.remove(product_id)
+        return {"success": True}
+    raise HTTPException(
+        status_code=404, detail=f"There is no product with id={product_id} in the cart"
+    )
