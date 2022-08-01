@@ -19,5 +19,7 @@ async def cart_add(request: Request, product_id: int, quntity=1,
 
 @router.get('/get/')
 async def cart_get(request: Request):
-    cart = Cart(request).__dict__['cart']
-    return {"cart": cart}
+    cart = Cart(request)
+    values = cart.__dict__['cart']
+    quantity = cart.__len__()
+    return {'quantity': quantity, "cart": values}
