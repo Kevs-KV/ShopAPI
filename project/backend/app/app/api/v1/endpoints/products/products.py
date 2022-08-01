@@ -16,7 +16,12 @@ router = APIRouter()
 async def product_create(
         product_crud: ProductRepository = Depends(ProductRepositoryDependencyMarker),
         product: ProductDTO = ProductBodySpec.item):
-    await product_crud.add_product(**product.dict(exclude_unset=True, exclude_none=True))
+    try:
+        await product_crud.add_product(**product.dict(exclude_unset=True, exclude_none=True))
+    except IntegrityError:
+        raise HTTPException(
+            status_code=404, detail=f"Wrong entry data"
+        )
     return Response(status_code=201)
 
 
