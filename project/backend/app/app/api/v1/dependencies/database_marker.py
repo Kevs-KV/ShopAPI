@@ -16,3 +16,11 @@ class BrandRepositoryDependencyMarker:
 
 class CommentRepositoryDependencyMarker:
     pass
+
+
+class OrderRepositoryDependencyMarker:
+    pass
+
+
+class ItemRepositoryDependencyMarker:
+    pass
