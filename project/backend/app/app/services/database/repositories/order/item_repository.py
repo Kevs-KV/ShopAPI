@@ -10,6 +10,8 @@ class ItemRepository(Base):
     async def add_order(self,
                         order_id: int,
                         product_id: int,
+                        quantity: int,
+                        price: int
                         ) -> Model:
         payload = filter_payload(locals())
         return await self._insert(**payload)

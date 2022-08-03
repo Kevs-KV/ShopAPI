@@ -16,8 +16,15 @@ async def add_order(request: Request,
                     order: OrderDTO = OrderBodySpec.item,
                     order_crud: OrderRepository = Depends(OrderRepositoryDependencyMarker),
                     item_crud: ItemRepository = Depends(ItemRepositoryDependencyMarker)):
-    cart = Cart(request).__dict__['cart']
+    cart = Cart(request)
+    values = cart.__dict__['cart']
+    if len(cart) < 1:
+        return {'detail': 'There are no products in the cart'}
+    total_price = Cart(request).get_total_price()
     order_obj = await order_crud.add_order(order)
-    for product in cart.values():
-        await item_crud.add_order(order_id=order_obj.id, product_id=product)
-    return {'saccess': True}
+    for product in values:
+        await item_crud.add_order(order_id=order_obj.id, product_id=int(product),
+                                  quantity=values[product]['quantity'], price=values[product]['price'])
+    result_order = await order_crud.get_order(order_obj.id)
+    cart.clear()
+    return {'total_price': total_price, 'order': result_order}

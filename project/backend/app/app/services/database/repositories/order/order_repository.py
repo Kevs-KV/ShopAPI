@@ -11,3 +11,7 @@ class OrderRepository(Base):
                         ) -> Model:
         payload = obj_in.__dict__
         return await self._insert(**payload)
+
+
+    async def get_order(self, order_id):
+        return await self._detail(self.model.id, order_id, self.model.items)
