@@ -4,16 +4,14 @@ from starlette.requests import Request
 
 from services.database.models.product import Product
 
-secret_key = 'cart'
-
 
 class Cart:
 
     def __init__(self, request: Request):
         self.session = request.session
-        cart = self.session.get(secret_key)
+        cart = self.session.get('cart')
         if not cart:
-            cart = self.session[secret_key] = {}
+            cart = self.session['cart'] = {}
         self.cart = cart
 
     def add(self, product: Product, quantity: int = 1, update_quantity=False):
@@ -33,6 +31,9 @@ class Cart:
             Decimal(item['price']) * item['quantity']
             for item in self.cart.values()
         )
+
+    def clear(self):
+        del self.session['cart']
 
     def __len__(self):
         return sum(item['quantity'] for item in self.cart.values())
