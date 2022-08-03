@@ -28,3 +28,9 @@ async def add_order(request: Request,
     result_order = await order_crud.get_order(order_obj.id)
     cart.clear()
     return {'total_price': total_price, 'order': result_order}
+
+
+@router.get('/{order_id}/')
+async def get_order(order_id: int,
+                    order_crud: OrderRepository = Depends(OrderRepositoryDependencyMarker)):
+    return await order_crud.get_order(order_id)
