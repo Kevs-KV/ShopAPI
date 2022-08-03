@@ -7,7 +7,7 @@ from services.database.models.base import Base
 class Order(Base):
     id = Column(Integer, Identity(always=True, cache=5), primary_key=True)
     full_name = Column(String, index=True)
-    email = Column(String, unique=True, index=True, nullable=False)
+    email = Column(String, index=True, nullable=False)
     address = Column(String, index=True)
     city = Column(String, index=True)
     country = Column(String, index=True)
