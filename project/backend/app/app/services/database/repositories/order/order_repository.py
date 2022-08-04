@@ -14,8 +14,11 @@ class OrderRepository(Base):
         payload = obj_in.__dict__
         return await self._insert(**payload)
 
-    async def get_order(self, order_id):
+    async def get_detail_order(self, order_id):
         return await self._detail(self.model.id, order_id, self.model.items)
+
+    async def get_by_email(self, email: str) -> Model:
+        return await self._select_all(self.model.email == email)
 
     async def get_list_order(self, page, limit):
         session = await self.get_session()

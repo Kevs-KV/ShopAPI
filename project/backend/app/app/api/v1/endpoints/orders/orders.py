@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Security, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Security
 from sqlalchemy.exc import DBAPIError
 from starlette.requests import Request
 
@@ -27,15 +27,26 @@ async def add_order(request: Request,
     for product in values:
         await item_crud.add_order(order_id=order_obj.id, product_id=int(product),
                                   quantity=values[product]['quantity'], price=values[product]['price'])
-    result_order = await order_crud.get_order(order_obj.id)
+    result_order = await order_crud.get_detail_order(order_obj.id)
     cart.clear()
     return {'total_price': total_price, 'order': result_order}
 
 
+@router.get('/')
+async def get_user_order(order_crud: OrderRepository = Depends(OrderRepositoryDependencyMarker),
+                         user=Security(JWTSecurityHead(), scopes=['user'])):
+    return await order_crud.get_by_email(user.email)
+
+
 @router.get('/{order_id}/')
-async def get_order(order_id: int,
-                    order_crud: OrderRepository = Depends(OrderRepositoryDependencyMarker)):
-    return await order_crud.get_order(order_id)
+async def get_order_by_id(order_id: int,
+                          order_crud: OrderRepository = Depends(OrderRepositoryDependencyMarker),
+                          user=Security(JWTSecurityHead())):
+    order = await order_crud.get_detail_order(order_id)
+    if user.is_superuser or order.email == user.email:
+        return order
+    else:
+        return {'detail': 'The order does not belong to the user and he is not an administrator'}
 
 
 @router.get('/list/{page}/{limit}', dependencies=[Security(JWTSecurityHead(), scopes=['admin'])])
