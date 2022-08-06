@@ -1,4 +1,5 @@
 import asyncio
+from logging.config import fileConfig
 from typing import no_type_check
 
 import nest_asyncio
@@ -6,13 +7,13 @@ from alembic import context
 from sqlalchemy import engine_from_config, pool
 from sqlalchemy.ext.asyncio import AsyncEngine
 
-
-from app.services.database.models.base import Base
+from app.services.database.models import *
 
 target_metadata = Base.metadata
 
 config = context.config  # type: ignore
 
+fileConfig(config.config_file_name)
 
 
 def run_migrations_offline():
