@@ -4,10 +4,10 @@ from decimal import Decimal
 
 from sqlalchemy.ext.asyncio import AsyncSessionTransaction
 
-from services.database.models.product.product import Product
-from services.database.repositories.base import Base
-from services.database.schemas.product.product import ProductDTO, ProductUpdate
-from utils.database_utils import filter_payload
+from app.services.database.models.product.product import Product
+from app.services.database.repositories.base import Base
+from app.services.database.schemas.product.product import ProductDTO, ProductUpdate
+from app.utils.database_utils import filter_payload
 
 Model = typing.TypeVar("Model")
 TransactionContext = typing.AsyncContextManager[AsyncSessionTransaction]

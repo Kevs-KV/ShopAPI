@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, Security, HTTPException
 
-from api.v1.dependencies.database_marker import CommentRepositoryDependencyMarker
-from services.database.repositories.product.comment_repositiry import CommentRepository
-from services.security.jwt import JWTSecurityHead
+from app.api.v1.dependencies.database_marker import CommentRepositoryDependencyMarker
+from app.services.database.repositories.product.comment_repositiry import CommentRepository
+from app.services.security.jwt import JWTSecurityHead
 
 router = APIRouter()
 

@@ -1,7 +1,7 @@
-from services.database.models.order.order import Item
-from services.database.repositories.base import Base
-from services.database.repositories.product.product_repository import Model
-from utils.database_utils import filter_payload
+from app.services.database.models.order.order import Item
+from app.services.database.repositories.base import Base
+from app.services.database.repositories.product.product_repository import Model
+from app.utils.database_utils import filter_payload
 
 
 class ItemRepository(Base):

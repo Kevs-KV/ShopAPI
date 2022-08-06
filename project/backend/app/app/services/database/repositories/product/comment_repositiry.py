@@ -1,5 +1,5 @@
-from services.database.models.product import Comment
-from services.database.repositories.base import Base
+from app.services.database.models.product import Comment
+from app.services.database.repositories.base import Base
 
 
 class CommentRepository(Base):

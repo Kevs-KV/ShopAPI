@@ -1,10 +1,10 @@
 from fastapi import APIRouter
 
-from api.v1.endpoints.authentication import api_authentication
-from api.v1.endpoints.cart import api_cart
-from api.v1.endpoints.orders import api_order
-from api.v1.endpoints.products import api_products
-from api.v1.endpoints.users import api_users
+from app.api.v1.endpoints.authentication import api_authentication
+from app.api.v1.endpoints.cart import api_cart
+from app.api.v1.endpoints.orders import api_order
+from app.api.v1.endpoints.products import api_products
+from app.api.v1.endpoints.users import api_users
 
 api_router = APIRouter()
 

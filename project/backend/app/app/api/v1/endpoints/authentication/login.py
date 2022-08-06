@@ -4,8 +4,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from starlette import status
 
-from api.v1.dependencies.security import JWTAuthenticationMarker
-from services.security.jwt import JWTAuthenticationService
+from app.api.v1.dependencies.security import JWTAuthenticationMarker
+from app.services.security.jwt import JWTAuthenticationService
 
 router = APIRouter()
 

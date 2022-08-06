@@ -1,8 +1,8 @@
 from sqlalchemy import select
 
-from services.database.models.order.order import Order
-from services.database.repositories.base import Base, Model
-from services.database.schemas.order.order import OrderDTO
+from app.services.database.models.order.order import Order
+from app.services.database.repositories.base import Base, Model
+from app.services.database.schemas.order.order import OrderDTO
 
 
 class OrderRepository(Base):

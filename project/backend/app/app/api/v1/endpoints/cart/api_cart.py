@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from api.v1.endpoints.cart import cart
+from app.api.v1.endpoints.cart import cart
 
 api_router = APIRouter()
 

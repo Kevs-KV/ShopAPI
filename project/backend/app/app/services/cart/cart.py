@@ -2,7 +2,7 @@ from decimal import Decimal
 
 from starlette.requests import Request
 
-from services.database.models.product import Product
+from app.services.database.models.product import Product
 
 
 class Cart:

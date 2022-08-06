@@ -4,9 +4,9 @@ from typing import Any
 import uvicorn
 from fastapi import FastAPI
 
-from api.v1.api import api_router
-from config.settings import settings
-from utils.application_builder.installation import ApplicationBuilder, DependencyApplicationBuilder
+from app.api.v1.api import api_router
+from app.config.settings import settings
+from app.utils.application_builder.installation import ApplicationBuilder, DependencyApplicationBuilder
 
 
 def app_factory() -> FastAPI:

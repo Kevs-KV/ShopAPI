@@ -1,8 +1,8 @@
 import typing
 
-from services.database.models.product.category import Category
-from services.database.repositories.base import Base, Model
-from services.database.schemas.product.category import CategoryDTO
+from app.services.database.models.product.category import Category
+from app.services.database.repositories.base import Base, Model
+from app.services.database.schemas.product.category import CategoryDTO
 
 
 class CategoryRepository(Base):

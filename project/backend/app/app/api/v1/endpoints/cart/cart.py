@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from starlette.requests import Request
 
-from api.v1.dependencies.database_marker import ProductRepositoryDependencyMarker
-from services.cart.cart import Cart
-from services.database.repositories.product.product_repository import ProductRepository
+from app.api.v1.dependencies.database_marker import ProductRepositoryDependencyMarker
+from app.services.cart.cart import Cart
+from app.services.database.repositories.product.product_repository import ProductRepository
 
 router = APIRouter()
 

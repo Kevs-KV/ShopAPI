@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from api.v1.endpoints.products import products, category, brands, comments
+from app.api.v1.endpoints.products import products, category, brands, comments
 
 api_router = APIRouter()
 

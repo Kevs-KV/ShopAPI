@@ -2,11 +2,11 @@ from fastapi import APIRouter, Depends, Security, HTTPException
 from fastapi.responses import Response
 from sqlalchemy.exc import IntegrityError
 
-from api.v1.dependencies.database_marker import BrandRepositoryDependencyMarker
-from services.database.repositories.product.brand_repository import BrandRepository
-from services.database.schemas.product.brand import BrandDTO
-from services.database.schemas.product.category import CategoryBodySpec
-from services.security.jwt import JWTSecurityHead
+from app.api.v1.dependencies.database_marker import BrandRepositoryDependencyMarker
+from app.services.database.repositories.product.brand_repository import BrandRepository
+from app.services.database.schemas.product.brand import BrandDTO
+from app.services.database.schemas.product.category import CategoryBodySpec
+from app.services.security.jwt import JWTSecurityHead
 
 router = APIRouter()
 

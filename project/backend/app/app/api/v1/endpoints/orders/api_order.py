@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from api.v1.endpoints.orders import orders
+from app.api.v1.endpoints.orders import orders
 
 api_router = APIRouter()
 

@@ -1,6 +1,6 @@
-from services.database.models.product.brand import Brand
-from services.database.repositories.base import Base, Model
-from services.database.schemas.product.brand import BrandDTO
+from app.services.database.models.product.brand import Brand
+from app.services.database.repositories.base import Base, Model
+from app.services.database.schemas.product.brand import BrandDTO
 
 
 class BrandRepository(Base):

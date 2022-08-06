@@ -6,22 +6,22 @@ from passlib.context import CryptContext
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
-from api.v1.dependencies.database_marker import UserRepositoryDependencyMarker, ProductRepositoryDependencyMarker, \
+from app.api.v1.dependencies.database_marker import UserRepositoryDependencyMarker, ProductRepositoryDependencyMarker, \
     CategoryRepositoryDependencyMarker, BrandRepositoryDependencyMarker, CommentRepositoryDependencyMarker, \
     OrderRepositoryDependencyMarker, ItemRepositoryDependencyMarker
-from api.v1.dependencies.security import JWTAuthenticationMarker, JWTSecurityMarker
-from config.settings import settings
-from middlewares.process_time_middleware import add_process_time_header
-from services.database.repositories.order.item_repository import ItemRepository
-from services.database.repositories.order.order_repository import OrderRepository
-from services.database.repositories.product.brand_repository import BrandRepository
-from services.database.repositories.product.category_repository import CategoryRepository
-from services.database.repositories.product.comment_repositiry import CommentRepository
-from services.database.repositories.product.product_repository import ProductRepository
-from services.database.repositories.user.user_repository import UserRepository
-from services.database.session import DatabaseComponents
-from services.security.jwt import JWTAuthenticationService, JWTSecurityService
-from utils.password_hashing import PasswordHasher
+from app.api.v1.dependencies.security import JWTAuthenticationMarker, JWTSecurityMarker
+from app.config.settings import settings
+from app.middlewares.process_time_middleware import add_process_time_header
+from app.services.database.repositories.order.item_repository import ItemRepository
+from app.services.database.repositories.order.order_repository import OrderRepository
+from app.services.database.repositories.product.brand_repository import BrandRepository
+from app.services.database.repositories.product.category_repository import CategoryRepository
+from app.services.database.repositories.product.comment_repositiry import CommentRepository
+from app.services.database.repositories.product.product_repository import ProductRepository
+from app.services.database.repositories.user.user_repository import UserRepository
+from app.services.database.session import DatabaseComponents
+from app.services.security.jwt import JWTAuthenticationService, JWTSecurityService
+from app.utils.password_hashing import PasswordHasher
 
 
 class DependencyApplicationBuilder:

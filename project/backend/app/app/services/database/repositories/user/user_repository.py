@@ -1,6 +1,6 @@
-from services.database.models.user.user import User
-from services.database.repositories.base import Base, Model
-from services.database.schemas.user.user import UserCreate
+from app.services.database.models.user.user import User
+from app.services.database.repositories.base import Base, Model
+from app.services.database.schemas.user.user import UserCreate
 
 
 class UserRepository(Base):

@@ -3,7 +3,7 @@ import enum
 from sqlalchemy import Column, Integer, Identity, VARCHAR, Numeric, Text, DateTime, func, ForeignKey
 from sqlalchemy.orm import relationship
 
-from services.database.models.base import Base
+from app.services.database.models.base import Base
 
 
 class ColorEnum(enum.Enum):
