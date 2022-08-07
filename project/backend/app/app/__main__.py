@@ -1,4 +1,3 @@
-import asyncio
 from typing import Any
 
 import uvicorn
@@ -18,9 +17,6 @@ def app_factory() -> FastAPI:
 
 def run_application(**kwargs: Any) -> None:
     app = app_factory()
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(app.state.db_components.init_models())
-    loop.stop()
     uvicorn.run(app, **kwargs)
 
 
