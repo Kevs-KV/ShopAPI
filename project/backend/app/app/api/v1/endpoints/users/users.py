@@ -24,7 +24,7 @@ async def create_user(user_in: UserCreate,
     return user
 
 
-@router.get("/{email}/")
+@router.get("/{email}/", response_model=User)
 async def get_user(email: str, user_crud: UserRepository = Depends(UserRepositoryDependencyMarker)):
     user = await user_crud.get_by_email(email)
     return user
