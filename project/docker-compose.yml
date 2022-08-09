@@ -2,6 +2,10 @@ version: '3.10'
 services:
   web:
     build: .
+    working_dir: /usr/src/project/backend/app
+    command: /bin/sh -c 'alembic upgrade head && python -m app'
+    networks:
+      - app-network  
     ports:
       - 8000:8080
     env_file:
@@ -10,12 +14,13 @@ services:
       - db
   db:
     image: postgres:14.0-alpine
+    container_name: postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data/
+    networks:
+      - app-network  
     env_file:
       - ".env"
-    ports:
-      - "${POSTGRES_PORT}:5432"
     environment:
       - POSTGRES_SERVER=${POSTGRES_SERVER}
       - POSTGRES_USER=${POSTGRES_USER}
@@ -23,3 +28,7 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
 volumes:
   postgres_data:
+
+networks:
+  app-network:
+

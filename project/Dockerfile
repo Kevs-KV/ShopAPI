@@ -7,6 +7,3 @@ RUN apt-get update \
 RUN pip install --upgrade pip
 COPY backend ./backend
 RUN pip install -r ./backend/app/requirements.txt
-WORKDIR /usr/src/project/backend/app
-ENTRYPOINT [ "python" ]
-CMD [ "-m", "app" ]
