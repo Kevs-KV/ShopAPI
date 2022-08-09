@@ -3,8 +3,10 @@ WORKDIR /usr/src/project
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 RUN apt-get update \
-    && apt-get install -y postgresql postgresql-contrib gcc python3-dev musl-dev
+    && apt-get install -y postgresql postgresql-contrib
 RUN pip install --upgrade pip
+COPY backend ./backend
 RUN pip install -r ./backend/app/requirements.txt
+WORKDIR /usr/src/project/backend/app
 ENTRYPOINT [ "python" ]
-CMD [ "-m", "./backend/app/app" ]
+CMD [ "-m", "app" ]

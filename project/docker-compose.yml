@@ -2,11 +2,8 @@ version: '3.10'
 services:
   web:
     build: .
-    volumes:
-      - ./backend/app:/usr/src/project/backend/app/
-    command: python -m app
     ports:
-      - 8000:8000
+      - 8000:8080
     env_file:
       - ./backend/app/.env
     depends_on:
@@ -16,7 +13,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
-      - "../.env"
+      - ".env"
     ports:
       - "${POSTGRES_PORT}:5432"
     environment:
