@@ -26,6 +26,34 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
+  rabbitmq-broker:
+      image: rabbitmq:3-management-alpine
+      ports:
+        - "4369:4369"
+        - "5672:5672"
+        - "25672:25672"
+        - "15672:15672"
+  celery-beat:
+    build: .
+    command: celery -A celery_app beat -l info
+    working_dir: /usr/src/project/backend/app/app/services/worker
+    depends_on:
+      - rabbitmq-broker
+      - web
+  dashboard:
+      build: .
+      working_dir: /usr/src/project/backend/app/app/services/worker
+      command: >
+        bash -c "celery -A celery_app flower --port=5566 && 
+        celery -A celery_app flower  --address=0.0.0.0 --port=5566 && 
+        celery -A celery_app flower --broker=amqp://guest:guest@rabbitmq:5672//"
+      ports:
+        - "5566:5566"
+      depends_on:
+        - web
+        - db
+        - rabbitmq-broker
+        - celery-beat
 volumes:
   postgres_data:
 
