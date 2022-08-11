@@ -5,7 +5,7 @@ services:
     working_dir: /usr/src/project/backend/app
     command: /bin/sh -c 'alembic upgrade head && python -m app'
     networks:
-      - app-network  
+      - app-network
     ports:
       - 8000:8080
     env_file:
@@ -18,7 +18,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     networks:
-      - app-network  
+      - app-network
     env_file:
       - ".env"
     environment:
@@ -26,34 +26,37 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
-  rabbitmq-broker:
-      image: rabbitmq:3-management-alpine
-      ports:
-        - "4369:4369"
-        - "5672:5672"
-        - "25672:25672"
-        - "15672:15672"
+
+  rabbitmq:
+    image: rabbitmq:3.10.6
+    restart: always
+    container_name: vcd_api_service_rabbitmq
+
+  celery:
+    build: .
+    restart: always
+    container_name: vcd_api_service_celery
+    command: celery -A backend.app.app.services.worker.celery_app worker -l INFO
+    depends_on:
+        - rabbitmq
+
   celery-beat:
     build: .
-    command: celery -A celery_app beat -l info
-    working_dir: /usr/src/project/backend/app/app/services/worker
+    restart: always
+    container_name: vcd_api_service_celery_beat
+    command: celery -A backend.app.app.services.worker.celery_app beat -l INFO
     depends_on:
-      - rabbitmq-broker
-      - web
-  dashboard:
-      build: .
-      working_dir: /usr/src/project/backend/app/app/services/worker
-      command: >
-        bash -c "celery -A celery_app flower --port=5566 && 
-        celery -A celery_app flower  --address=0.0.0.0 --port=5566 && 
-        celery -A celery_app flower --broker=amqp://guest:guest@rabbitmq:5672//"
-      ports:
-        - "5566:5566"
-      depends_on:
-        - web
-        - db
-        - rabbitmq-broker
-        - celery-beat
+      - rabbitmq
+
+  flower:
+    build: .
+    restart: always
+    container_name: vcd_api_service_flower
+    command: celery -A backend.app.app.services.worker.celery_app flower --port=5556 --url_prefix=flower -l INFO
+    depends_on:
+      - celery
+      - celery-beat
+
 volumes:
   postgres_data:
 
