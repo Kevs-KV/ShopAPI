@@ -1,16 +1,14 @@
-from __future__ import absolute_import
-
 from celery import Celery
-from celery.schedules import crontab
 
-CELERY_BEAT_SCHEDULE = {
-    "sample_task": {
-        "task": "app.services.worker.celery_test.sample_task",
-        "schedule": crontab(minute="*/1"),
-    },
-}
+celery_app = Celery("worker", broker="amqp://rabbitmq:5672", include=["app.services.worker.tasks"])
 
-celery_app = Celery("worker", broker="amqp://rabbitmq:5672")
-celery_app.conf.update(BROKER_URL="amqp://rabbitmq:5672")
-celery_app.config_from_object(CELERY_BEAT_SCHEDULE, namespace="CELERY")
+
+class Config:
+    enable_utc = True
+    timezone = 'Europe/Minsk'
+    broker_url = "amqp://rabbitmq:5672"
+    result_backend = "rpc://"
+
+
+celery_app.config_from_object(Config)
 celery_app.autodiscover_tasks()
