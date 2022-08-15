@@ -1,7 +1,7 @@
 import secrets
 from typing import Any, Dict, Optional
 
-from pydantic import BaseSettings, validator, AnyUrl
+from pydantic import BaseSettings, validator, AnyUrl, EmailStr
 
 
 class PostgresDsn(AnyUrl):
@@ -32,6 +32,16 @@ class Settings(BaseSettings):
     API_V1_STR: str = ""
     SECRET_KEY: str = secrets.token_urlsafe(32)
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
+
+    MAIL_USERNAME: str
+    MAIL_FROM: EmailStr
+    MAIL_PASSWORD: str
+    MAIL_PORT: int
+    MAIL_SERVER: str
+    MAIL_TLS: bool
+    MAIL_SSL: bool
+
+    EMAIL_TEMPLATES_DIR: str = "/app/email-templates/"
 
     class Config:
         case_sensitive = True

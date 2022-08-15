@@ -2,6 +2,7 @@ from typing import no_type_check
 
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
+from fastapi_mail import FastMail, ConnectionConfig
 from passlib.context import CryptContext
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.sessions import SessionMiddleware
@@ -10,6 +11,7 @@ from app.api.v1.dependencies.database_marker import UserRepositoryDependencyMark
     CategoryRepositoryDependencyMarker, BrandRepositoryDependencyMarker, CommentRepositoryDependencyMarker, \
     OrderRepositoryDependencyMarker, ItemRepositoryDependencyMarker
 from app.api.v1.dependencies.security import JWTAuthenticationMarker, JWTSecurityMarker
+from app.api.v1.dependencies.utils import MailServiceMarker
 from app.config.settings import settings
 from app.middlewares.process_time_middleware import add_process_time_header
 from app.services.database.repositories.order.item_repository import ItemRepository
@@ -73,7 +75,15 @@ class DependencyApplicationBuilder:
                                                           user_crud=UserRepository(db_components.sessionmaker,
                                                                                    password_hasher),
                                                           algorithm="HS256",
-                                                          secret_key=self._settings.SECRET_KEY)}
+                                                          secret_key=self._settings.SECRET_KEY),
+            MailServiceMarker: lambda: FastMail(ConnectionConfig(MAIL_USERNAME=self._settings.MAIL_USERNAME,
+                                                                 MAIL_FROM=self._settings.MAIL_FROM,
+                                                                 MAIL_PASSWORD=self._settings.MAIL_PASSWORD,
+                                                                 MAIL_PORT=self._settings.MAIL_PORT,
+                                                                 MAIL_SERVER=self._settings.MAIL_SERVER,
+                                                                 MAIL_TLS=self._settings.MAIL_TLS,
+                                                                 MAIL_SSL=self._settings.MAIL_SSL
+                                                                 ))}
 
         )
 
