@@ -41,7 +41,7 @@ class Settings(BaseSettings):
     MAIL_TLS: bool
     MAIL_SSL: bool
 
-    EMAIL_TEMPLATES_DIR: str = "/app/email-templates/"
+    EMAIL_TEMPLATES_DIR: str = "./app/email-templates/"
 
     class Config:
         case_sensitive = True

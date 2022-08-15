@@ -1,2 +1,2 @@
-class MailServiceMarker:
+class ConfigMailMarker:
     pass

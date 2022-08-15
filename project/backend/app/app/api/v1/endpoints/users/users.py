@@ -1,21 +1,21 @@
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Security
-from fastapi_mail import FastMail
 
 from app.api.v1.dependencies.database_marker import UserRepositoryDependencyMarker
-from app.api.v1.dependencies.utils import MailServiceMarker
+from app.api.v1.dependencies.utils import ConfigMailMarker
 from app.services.database.repositories.user.user_repository import UserRepository
 from app.services.database.schemas.user.user import UserCreate, User
 from app.services.security.jwt import JWTSecurityHead
 from app.services.worker.tasks import send_mail_register
+
 router = APIRouter()
 
 
 @router.post("/", response_model=User)
 async def create_user(user_in: UserCreate,
                       user_crud: UserRepository = Depends(UserRepositoryDependencyMarker),
-                      mail_service: FastMail = Depends(MailServiceMarker)
+                      mail_service: dict = Depends(ConfigMailMarker)
                       ) -> Any:
     user = await user_crud.get_by_email(email=user_in.email)
     if user:
