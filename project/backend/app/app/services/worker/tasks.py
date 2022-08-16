@@ -14,8 +14,8 @@ def test_celery_start(*args) -> str:
 
 
 @celery_app.task(name="send_email_register")
-def task_send_mail_register(mail_config: dict, email: str):
+def task_send_mail_register(mail_config: dict, email: str, token: str):
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(send_mail_register(mail_config, email))
+    loop.run_until_complete(send_mail_register(mail_config, email, token))
     loop.stop()
     return True

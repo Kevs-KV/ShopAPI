@@ -53,6 +53,12 @@ class JWTAuthenticationService:
             "scopes": form_data.scopes,
         }))
 
+    async def registration_user_token(self, username: str, email: str):
+        return JWTToken(self._generate_jwt_token({
+            "username": username,
+            "email": email,
+        }))
+
     def _generate_jwt_token(self, token_payload: dict[str, Any]) -> str:
         token_payload = {
             "exp": datetime.utcnow() + timedelta(self._token_expires_in_minutes),
@@ -87,6 +93,15 @@ class JWTSecurityService:
                     headers={"WWW-Authenticate": "Bearer"},
                 )
         return await self._retrieve_user_or_raise_exception(token_payload.sub)
+
+    async def decode_register_token(self, token: str):
+        try:
+            return jwt.decode(token, self._secret_key, algorithms=[self._algorithm])
+        except (jwt.JWTError, ValidationError):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail='An error occurred while decoding',
+            )
 
     def _decode_token(self, token: str) -> TokenPayload:
         try:
