@@ -7,7 +7,7 @@ from app.api.v1.dependencies.utils import ConfigMailMarker
 from app.services.database.repositories.user.user_repository import UserRepository
 from app.services.database.schemas.user.user import UserCreate, User
 from app.services.security.jwt import JWTSecurityHead
-from app.services.worker.tasks import send_mail_register
+from app.services.worker.tasks import task_send_mail_register
 
 router = APIRouter()
 
@@ -15,8 +15,9 @@ router = APIRouter()
 @router.post("/", response_model=User)
 async def create_user(user_in: UserCreate,
                       user_crud: UserRepository = Depends(UserRepositoryDependencyMarker),
-                      mail_service: dict = Depends(ConfigMailMarker)
+                      mail_config: dict = Depends(ConfigMailMarker)
                       ) -> Any:
+
     user = await user_crud.get_by_email(email=user_in.email)
     if user:
         raise HTTPException(
@@ -24,7 +25,7 @@ async def create_user(user_in: UserCreate,
             detail="The user with this username already exists in the system.",
         )
     user = await user_crud.create_user(obj_in=user_in)
-    send_mail_register.delay(mail_service, user.email)
+    task_send_mail_register.delay(mail_config, user.email)
     return user
 
 

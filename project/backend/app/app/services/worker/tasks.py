@@ -1,11 +1,9 @@
 import asyncio
-from pathlib import Path
 
 from celery.utils.log import get_task_logger
-from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
 
-from app.config.settings import settings
 from app.services.worker.celery_app import celery_app
+from app.utils.mail_utils import send_mail_register
 
 logger = get_task_logger(__name__)
 
@@ -15,18 +13,9 @@ def test_celery_start(*args) -> str:
     return f"{args}"
 
 
-@celery_app.task(name="send_email")
-def send_mail_register(mail_config: dict, email: str):
-    with open(Path(settings.EMAIL_TEMPLATES_DIR) / "email_register.html") as f:
-        template_str = f.read()
-    send_mail = FastMail(ConnectionConfig(**mail_config))
-    message = MessageSchema(
-        subject="Fastapi-Mail module",
-        recipients=[email, ],
-        body=template_str,
-        subtype="html"
-    )
+@celery_app.task(name="send_email_register")
+def task_send_mail_register(mail_config: dict, email: str):
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(send_mail.send_message(message))
+    loop.run_until_complete(send_mail_register(mail_config, email))
     loop.stop()
     return True
