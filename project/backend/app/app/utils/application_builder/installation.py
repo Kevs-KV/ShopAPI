@@ -25,6 +25,21 @@ from app.services.security.jwt import JWTAuthenticationService, JWTSecurityServi
 from app.utils.password_hashing import PasswordHasher
 
 
+class ApplicationBuilderDatabaseComponents:
+
+    def get_repositoriest(self) -> dict:
+        db_components = DatabaseComponents(settings.SQLALCHEMY_DATABASE_URI)
+        password_hasher = PasswordHasher(pwd_context=CryptContext(schemes=["bcrypt"], deprecated="auto"))
+
+        return {UserRepositoryDependencyMarker: lambda: UserRepository(db_components.sessionmaker, password_hasher),
+                ProductRepositoryDependencyMarker: lambda: ProductRepository(db_components.sessionmaker.sessionmaker),
+                CategoryRepositoryDependencyMarker: lambda: CategoryRepository(db_components.sessionmaker.sessionmaker),
+                BrandRepositoryDependencyMarker: lambda: BrandRepository(db_components.sessionmaker.sessionmaker),
+                CommentRepositoryDependencyMarker: lambda: CommentRepository(db_components.sessionmaker),
+                OrderRepositoryDependencyMarker: lambda: OrderRepository(db_components.sessionmaker),
+                ItemRepositoryDependencyMarker: lambda: ItemRepository(db_components.sessionmaker)}
+
+
 class DependencyApplicationBuilder:
 
     def __init__(self, app: FastAPI, config: settings):
@@ -54,16 +69,9 @@ class DependencyApplicationBuilder:
     def configure_application_state(self) -> None:
         db_components = DatabaseComponents(self._settings.SQLALCHEMY_DATABASE_URI)
         password_hasher = PasswordHasher(pwd_context=CryptContext(schemes=["bcrypt"], deprecated="auto"))
-        self.app.state.db_components = db_components
-        self.app.state.config = self._settings
+
+        self.app.dependency_overrides.update(ApplicationBuilderDatabaseComponents().get_repositoriest())
         self.app.dependency_overrides.update({
-            UserRepositoryDependencyMarker: lambda: UserRepository(db_components.sessionmaker, password_hasher),
-            ProductRepositoryDependencyMarker: lambda: ProductRepository(db_components.sessionmaker),
-            CategoryRepositoryDependencyMarker: lambda: CategoryRepository(db_components.sessionmaker),
-            BrandRepositoryDependencyMarker: lambda: BrandRepository(db_components.sessionmaker),
-            CommentRepositoryDependencyMarker: lambda: CommentRepository(db_components.sessionmaker),
-            OrderRepositoryDependencyMarker: lambda: OrderRepository(db_components.sessionmaker),
-            ItemRepositoryDependencyMarker: lambda: ItemRepository(db_components.sessionmaker),
             JWTAuthenticationMarker: lambda: JWTAuthenticationService(
                 user_crud=UserRepository(db_components.sessionmaker, password_hasher),
                 password_hasher=password_hasher,
