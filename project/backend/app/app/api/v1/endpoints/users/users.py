@@ -1,6 +1,6 @@
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, Security
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Security
 
 from app.api.v1.dependencies.database_marker import UserRepositoryDependencyMarker
 from app.api.v1.dependencies.security import JWTAuthenticationMarker, JWTSecurityMarker
@@ -8,7 +8,7 @@ from app.api.v1.dependencies.utils import ConfigMailMarker
 from app.services.database.repositories.user.user_repository import UserRepository
 from app.services.database.schemas.user.user import UserCreate, User
 from app.services.security.jwt import JWTSecurityHead, JWTAuthenticationService, JWTSecurityService
-from app.services.worker.tasks import task_send_mail_register
+from app.services.worker.tasks import task_send_mail_register, check_user_activate
 
 router = APIRouter()
 
@@ -17,7 +17,7 @@ router = APIRouter()
 async def create_user(user_in: UserCreate,
                       user_crud: UserRepository = Depends(UserRepositoryDependencyMarker),
                       auth: JWTAuthenticationService = Depends(JWTAuthenticationMarker),
-                      mail_config: dict = Depends(ConfigMailMarker)
+                      mail_config: dict = Depends(ConfigMailMarker),
                       ) -> Any:
     user = await user_crud.get_by_email(email=user_in.email)
     if user:
@@ -28,6 +28,7 @@ async def create_user(user_in: UserCreate,
     user = await user_crud.create_user(obj_in=user_in)
     token = await auth.registration_user_token(username=user.full_name, email=user.email)
     task_send_mail_register.delay(mail_config, user.email, token)
+    check_user_activate.delay(user.email)
     return user
 
 
