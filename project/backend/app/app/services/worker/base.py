@@ -9,5 +9,5 @@ class DatabaseTask(Task):
     @property
     def repositories(self) -> dict:
         if self._repositories is None:
-            self._repositories = ApplicationBuilderDatabaseComponents().get_repositoriest()
+            self._repositories = ApplicationBuilderDatabaseComponents().get_repositories()
         return self._repositories

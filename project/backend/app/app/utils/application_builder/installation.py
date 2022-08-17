@@ -27,7 +27,7 @@ from app.utils.password_hashing import PasswordHasher
 
 class ApplicationBuilderDatabaseComponents:
 
-    def get_repositoriest(self) -> dict:
+    def get_repositories(self) -> dict:
         db_components = DatabaseComponents(settings.SQLALCHEMY_DATABASE_URI)
         password_hasher = PasswordHasher(pwd_context=CryptContext(schemes=["bcrypt"], deprecated="auto"))
 
@@ -70,7 +70,7 @@ class DependencyApplicationBuilder:
         db_components = DatabaseComponents(self._settings.SQLALCHEMY_DATABASE_URI)
         password_hasher = PasswordHasher(pwd_context=CryptContext(schemes=["bcrypt"], deprecated="auto"))
 
-        self.app.dependency_overrides.update(ApplicationBuilderDatabaseComponents().get_repositoriest())
+        self.app.dependency_overrides.update(ApplicationBuilderDatabaseComponents().get_repositories())
         self.app.dependency_overrides.update({
             JWTAuthenticationMarker: lambda: JWTAuthenticationService(
                 user_crud=UserRepository(db_components.sessionmaker, password_hasher),
