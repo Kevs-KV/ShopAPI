@@ -29,5 +29,9 @@ class UserRepository(Base):
         payload = {'is_active': True}
         return await self._update(self.model.email == email, **payload)
 
+    async def password_change_user(self, email: str, password: str):
+        payload = {'hashed_password': self._password_hasher.get_password_hash(password)}
+        return await self._update(self.model.email == email, **payload)
+
     async def delete_user(self, email: str):
         return await self._delete(self.model.email, email)
