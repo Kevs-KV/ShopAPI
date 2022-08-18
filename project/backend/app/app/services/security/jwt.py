@@ -53,7 +53,7 @@ class JWTAuthenticationService:
             "scopes": form_data.scopes,
         }))
 
-    async def registration_user_token(self, username: str, email: str):
+    async def identification_user_token(self, username: str, email: str):
         return JWTToken(self._generate_jwt_token({
             "username": username,
             "email": email,
@@ -94,7 +94,7 @@ class JWTSecurityService:
                 )
         return await self._retrieve_user_or_raise_exception(token_payload.sub)
 
-    async def decode_register_token(self, token: str):
+    async def decode_identification_user_token(self, token: str):
         try:
             return jwt.decode(token, self._secret_key, algorithms=[self._algorithm])
         except (jwt.JWTError, ValidationError):
