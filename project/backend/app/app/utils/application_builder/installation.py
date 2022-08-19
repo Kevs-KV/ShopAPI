@@ -32,9 +32,9 @@ class ApplicationBuilderDatabaseComponents:
         password_hasher = PasswordHasher(pwd_context=CryptContext(schemes=["bcrypt"], deprecated="auto"))
 
         return {UserRepositoryDependencyMarker: lambda: UserRepository(db_components.sessionmaker, password_hasher),
-                ProductRepositoryDependencyMarker: lambda: ProductRepository(db_components.sessionmaker.sessionmaker),
-                CategoryRepositoryDependencyMarker: lambda: CategoryRepository(db_components.sessionmaker.sessionmaker),
-                BrandRepositoryDependencyMarker: lambda: BrandRepository(db_components.sessionmaker.sessionmaker),
+                ProductRepositoryDependencyMarker: lambda: ProductRepository(db_components.sessionmaker),
+                CategoryRepositoryDependencyMarker: lambda: CategoryRepository(db_components.sessionmaker),
+                BrandRepositoryDependencyMarker: lambda: BrandRepository(db_components.sessionmaker),
                 CommentRepositoryDependencyMarker: lambda: CommentRepository(db_components.sessionmaker),
                 OrderRepositoryDependencyMarker: lambda: OrderRepository(db_components.sessionmaker),
                 ItemRepositoryDependencyMarker: lambda: ItemRepository(db_components.sessionmaker)}
