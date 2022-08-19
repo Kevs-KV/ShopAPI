@@ -13,7 +13,7 @@ async def _send_mail_config(template_config: dict) -> FastMail:
 
 
 async def _message_config(subject: str, prefix: str, email: str, template_body: dict) -> MessageSchema:
-    template_body['url'] = f'http://127.0.0.1:8080/users/{prefix}/'
+    template_body['url'] = f'http://127.0.0.1:8080/account/{prefix}/'
     message = MessageSchema(
         subject=subject,
         recipients=[email, ],
