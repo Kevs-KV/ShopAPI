@@ -8,7 +8,7 @@ from app.api.v1.dependencies.utils import ConfigMailMarker
 from app.services.database.repositories.user.user_repository import UserRepository
 from app.services.database.schemas.user.user import UserCreate, User
 from app.services.security.jwt import JWTAuthenticationService, JWTSecurityService
-from app.services.worker.tasks import task_send_mail_register, check_user_activate, task_send_mail_reset_password
+from app.services.worker.tasks import task_send_mail_register, task_check_user_activate, task_send_mail_reset_password
 
 router = APIRouter()
 
@@ -28,7 +28,7 @@ async def register_user(user_in: UserCreate,
     user = await user_crud.create_user(obj_in=user_in)
     token = await auth.identification_user_token(username=user.full_name, email=user.email)
     task_send_mail_register.delay(mail_config, user.email, token)
-    check_user_activate.apply_async(args=[user.email], countdown=360)
+    task_check_user_activate.apply_async(args=[user.email], countdown=360)
     return user
 
 

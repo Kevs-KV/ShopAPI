@@ -34,6 +34,15 @@ async def send_mail_register(template_config: dict, email: str, token: str):
 async def send_mail_password_reset(template_config: dict, email: str, token: str):
     template_body = {'token': token}
     send_mail = await _send_mail_config(template_config)
-    message = await _message_config(subject='password reset', prefix='password/reset', email=email, template_body=template_body)
+    message = await _message_config(subject='password reset', prefix='password/reset', email=email,
+                                    template_body=template_body)
     await send_mail.send_message(message, template_name="email_password_reset.html")
+    return {'detail': True}
+
+
+async def send_mail_user_login(template_config: dict, email: str):
+    template_body = {}
+    send_mail = await _send_mail_config(template_config)
+    message = await _message_config(subject='login', prefix='login', email=email, template_body=template_body)
+    await send_mail.send_message(message, template_name="email_login_notice.html")
     return {'detail': True}
