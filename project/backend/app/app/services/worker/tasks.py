@@ -41,3 +41,5 @@ def task_check_user_activate(email: str):
 def task_send_mail_user_login(mail_config: dict, email: str):
     asyncio.run(send_mail_user_login(mail_config, email))
     return True
+
+

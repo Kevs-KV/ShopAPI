@@ -83,6 +83,7 @@ def upgrade():
     )
     op.create_table('item',
     sa.Column('id', sa.Integer(), sa.Identity(always=True, cache=5), nullable=False),
+    sa.Column('name', sa.VARCHAR(length=255), nullable=True),
     sa.Column('order_id', sa.Integer(), nullable=False),
     sa.Column('product_id', sa.Integer(), nullable=False),
     sa.Column('price', sa.Numeric(precision=8), server_default='1', nullable=True),

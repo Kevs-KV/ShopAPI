@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, Identity, ForeignKey, String, Numeric
+from sqlalchemy import Column, Integer, Identity, ForeignKey, String, Numeric, VARCHAR
 from sqlalchemy.orm import relationship
 
 from app.services.database.models.base import Base
@@ -17,6 +17,7 @@ class Order(Base):
 
 class Item(Base):
     id = Column(Integer, Identity(always=True, cache=5), primary_key=True)
+    name = Column(VARCHAR(255), unique=True, index=True)
     order_id = Column(Integer, ForeignKey('order.id', ondelete="CASCADE"), nullable=False)
     order = relationship('Order', back_populates="items")
     product_id = Column(Integer, ForeignKey('product.id', ondelete="CASCADE"), nullable=False)

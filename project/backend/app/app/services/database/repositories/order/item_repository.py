@@ -9,6 +9,7 @@ class ItemRepository(Base):
 
     async def add_order(self,
                         order_id: int,
+                        name: str,
                         product_id: int,
                         quantity: int,
                         price: int
