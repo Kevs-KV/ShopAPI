@@ -5,7 +5,7 @@ from celery.utils.log import get_task_logger
 from app.api.v1.dependencies.database_marker import UserRepositoryDependencyMarker
 from app.services.worker.base import DatabaseTask
 from app.services.worker.celery_app import celery_app
-from app.utils.mail_utils import send_mail_register, send_mail_password_reset, send_mail_user_login
+from app.utils.mail_utils import send_mail_register, send_mail_password_reset, send_mail_user_login, send_mail_order
 
 logger = get_task_logger(__name__)
 
@@ -43,3 +43,7 @@ def task_send_mail_user_login(mail_config: dict, email: str):
     return True
 
 
+@celery_app.task(name='send_mail_order_list')
+def task_send_mail_order_list(mail_config: dict, order: dict, email: str):
+    asyncio.run(send_mail_order(mail_config, order, email))
+    return True

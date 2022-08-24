@@ -46,3 +46,11 @@ async def send_mail_user_login(template_config: dict, email: str):
     message = await _message_config(subject='login', prefix='login', email=email, template_body=template_body)
     await send_mail.send_message(message, template_name="email_login_notice.html")
     return {'detail': True}
+
+
+async def send_mail_order(template_config: dict, order: dict, email: str):
+    template_body = {'order': order}
+    send_mail = await _send_mail_config(template_config)
+    message = await _message_config(subject='order', prefix='order', email=email, template_body=template_body)
+    await send_mail.send_message(message, template_name="email_order_list.html")
+    return {'detail': True}

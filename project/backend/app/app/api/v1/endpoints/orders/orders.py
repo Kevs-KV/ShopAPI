@@ -4,11 +4,13 @@ from starlette.requests import Request
 
 from app.api.v1.dependencies.database_marker import OrderRepositoryDependencyMarker, \
     ItemRepositoryDependencyMarker
+from app.api.v1.dependencies.utils import ConfigMailMarker
 from app.services.cart.cart import Cart
 from app.services.database.repositories.order.item_repository import ItemRepository
 from app.services.database.repositories.order.order_repository import OrderRepository
 from app.services.database.schemas.order.order import OrderDTO, OrderBodySpec
 from app.services.security.jwt import JWTSecurityHead
+from app.utils.order_utils import order_alert_user
 
 router = APIRouter()
 
@@ -17,7 +19,8 @@ router = APIRouter()
 async def add_order(request: Request,
                     order: OrderDTO = OrderBodySpec.item,
                     order_crud: OrderRepository = Depends(OrderRepositoryDependencyMarker),
-                    item_crud: ItemRepository = Depends(ItemRepositoryDependencyMarker)):
+                    item_crud: ItemRepository = Depends(ItemRepositoryDependencyMarker),
+                    mail_config: dict = Depends(ConfigMailMarker)):
     cart = Cart(request)
     values = cart.__dict__['cart']
     if len(cart) < 1:
@@ -28,7 +31,9 @@ async def add_order(request: Request,
         await item_crud.add_order(order_id=order_obj.id, product_id=int(product), name=values[product]['name'],
                                   quantity=values[product]['quantity'], price=values[product]['price'])
     result_order = await order_crud.get_detail_order(order_obj.id)
+    await order_alert_user(result_order, mail_config, total_price)
     cart.clear()
+
     return {'total_price': total_price, 'order': result_order}
 
 
