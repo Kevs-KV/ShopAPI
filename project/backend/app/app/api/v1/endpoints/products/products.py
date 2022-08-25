@@ -47,6 +47,11 @@ async def product_search(value: str, product_crud: ProductRepository = Depends(P
     return await product_crud.search_product_by_name(value)
 
 
+@router.get('/list/{page}/{limit}/')
+async def product_page_list(page: int, limit: int, product_crud: ProductRepository = Depends(ProductRepositoryDependencyMarker)):
+    return await product_crud.get_list_product(page, limit)
+
+
 @router.delete('/delete/', dependencies=[Security(JWTSecurityHead(), scopes=['admin'])])
 async def product_delete(product_id: int, product_crud: ProductRepository = Depends(ProductRepositoryDependencyMarker)):
     try:

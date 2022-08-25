@@ -2,6 +2,7 @@ import typing
 from datetime import datetime
 from decimal import Decimal
 
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSessionTransaction
 
 from app.services.database.models.product.product import Product
@@ -47,3 +48,10 @@ class ProductRepository(Base):
     async def update_product(self, product_id: int, product: ProductUpdate):
         payload = product.__dict__
         return await self._update(self.model.id == product_id, **payload)
+
+    async def get_list_product(self, page, limit):
+        session = await self.get_session()
+        async with self._transaction:
+            result = await session.execute(
+                select(self.model).offset((page - 1) * limit).limit(limit))
+        return result.scalars().all()
