@@ -11,10 +11,15 @@ router = APIRouter()
 @router.post('/add/')
 async def cart_add(request: Request, product_id: int, quntity: int = 1,
                    product_crud: ProductRepository = Depends(ProductRepositoryDependencyMarker)):
-    cart = Cart(request)
-    product = await product_crud.get_product(product_id)
-    cart.add(product, int(quntity), update_quantity=False)
-    return {"success": True}
+    try:
+        cart = Cart(request)
+        product = await product_crud.get_product(product_id)
+        cart.add(product, int(quntity), update_quantity=False)
+        return {"success": True}
+    except AttributeError:
+        raise HTTPException(
+            status_code=404, detail=f"There isn't entry with id={product_id}"
+        )
 
 
 @router.get('/get/')
@@ -28,9 +33,10 @@ async def cart_get(request: Request):
 @router.delete('/delete/')
 async def cart_delete(request: Request, product_id: str):
     cart = Cart(request)
-    if product_id in cart.__dict__['cart']:
+    try:
         cart.remove(product_id)
         return {"success": True}
-    raise HTTPException(
-        status_code=404, detail=f"There is no product with id={product_id} in the cart"
-    )
+    except KeyError:
+        raise HTTPException(
+            status_code=404, detail=f"There is no product with id={product_id} in the cart"
+        )
