@@ -27,12 +27,11 @@ class Base(metaclass=ABCMeta):
             async with self._session.begin() as transaction:
                 yield transaction
         else:
-            yield   # type: ignore
+            yield  # type: ignore
 
     @property
     def _transaction(self) -> TransactionContext:
         return self.__transaction()
-
 
     async def _insert(self, **values: typing.Any) -> Model:
         async with self._transaction:
@@ -95,22 +94,34 @@ class Base(metaclass=ABCMeta):
                 select(self.model).order_by(order).filter(order == value))
         return result.scalars().all()
 
-    async def _detail(self, order: typing.Any, value: typing.Any, inload: typing.Any) -> Model:
-        async with self._transaction:
-            result = await self._session.execute(
-                select(self.model).order_by(order).filter(order == value).options(
-                    selectinload(inload)))
-        return typing.cast(Model, result.scalars().first())
-
     async def _count(self) -> int:
         async with self._transaction:
             count = (await self._session.execute(func.count(ASTERISK))).scalars().first()
         return typing.cast(int, count)
 
-    async def _pagination(self, page, limit) -> typing.List[Model]:
+    async def _pagination(self, page: int, limit: int) -> typing.List[Model]:
         async with self._transaction:
             result = await self._session.execute(
                 select(self.model).offset((page - 1) * limit).limit(limit))
+        return result.scalars().all()
+
+    async def _detail_one(self, order: typing.Any, value: typing.Any, clauses: typing.Tuple[typing.Any]) -> Model:
+        stmt = list(map(lambda s: selectinload(s), clauses))
+        async with self._transaction:
+            result = await self._session.execute(
+                select(self.model).order_by(order).filter(order == value).options(
+                    *stmt))
+        return typing.cast(Model, result.scalars().first())
+
+    async def _detail_list(self, page: int, limit: int, order: typing.Any,
+                           clauses: typing.Tuple[typing.Any]) -> typing.List[
+        Model]:
+        stmt = list(map(lambda s: selectinload(s), clauses))
+        async with self._transaction:
+            result = await self._session.execute(
+                select(self.model).order_by(order).offset((page - 1) * limit).limit(
+                    limit).options(
+                    *stmt))
         return result.scalars().all()
 
     def _convert_to_model(self, kwargs) -> Model:
