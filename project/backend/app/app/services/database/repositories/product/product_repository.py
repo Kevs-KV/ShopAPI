@@ -43,11 +43,13 @@ class ProductRepository(Base):
         return await self._select_one(self.model.id == product_id)
 
     async def detail_product(self, product_id: int) -> Model:
-        return await self._detail(self.model.id, product_id, self.model.comments)
+        payload = (self.model.category, self.model.comments)
+        return await self._detail_one(self.model.id, product_id, payload)
 
     async def update_product(self, product_id: int, product: ProductUpdate):
         payload = product.__dict__
         return await self._update(self.model.id == product_id, **payload)
 
     async def get_list_product(self, page, limit):
-        return await self._pagination(page, limit)
+        payload = (self.model.category, self.model.brand)
+        return await self._detail_list(page, limit, self.model.id, payload)
