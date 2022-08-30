@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 
 from sqlalchemy import delete, insert, lambda_stmt, select, exists, func, update
 from sqlalchemy.ext.asyncio import AsyncSessionTransaction, AsyncSession
-from sqlalchemy.orm import selectinload, sessionmaker
+from sqlalchemy.orm import selectinload, sessionmaker, contains_eager
 from sqlalchemy.sql import Executable
 
 Model = typing.TypeVar("Model")
@@ -105,6 +105,17 @@ class Base(metaclass=ABCMeta):
                 select(self.model).offset((page - 1) * limit).limit(limit))
         return result.scalars().all()
 
+    async def _pagination_child(self, page: int, limit: int, key: int, order: typing.Any, filter_model: Model,
+                                   filter_order: typing.Any) -> Model:
+        subq = select(filter_model). \
+            filter(filter_order == key).offset(
+            (page - 1) * limit).limit(
+            limit).subquery().lateral()
+        async with self._transaction:
+            result = await self._session.execute(select(self.model).filter(order == key).outerjoin(subq).
+                                                 options(contains_eager(self.model.products, alias=subq)))
+        return result.scalars().first()
+
     async def _detail_one(self, order: typing.Any, value: typing.Any, clauses: typing.Tuple[typing.Any]) -> Model:
         stmt = list(map(lambda s: selectinload(s), clauses))
         async with self._transaction:
@@ -119,9 +130,8 @@ class Base(metaclass=ABCMeta):
         stmt = list(map(lambda s: selectinload(s), clauses))
         async with self._transaction:
             result = await self._session.execute(
-                select(self.model).order_by(order).offset((page - 1) * limit).limit(
-                    limit).options(
-                    *stmt))
+                select(self.model).order_by(order).options(
+                    *stmt).offset((page - 1) * limit).limit(limit))
         return result.scalars().all()
 
     def _convert_to_model(self, kwargs) -> Model:

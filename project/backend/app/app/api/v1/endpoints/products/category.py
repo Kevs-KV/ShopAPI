@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Security, HTTPException
 from fastapi.responses import Response
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, DBAPIError
 
 from app.api.v1.dependencies.database_marker import CategoryRepositoryDependencyMarker
 from app.services.database.repositories.product.category_repository import CategoryRepository
@@ -33,10 +33,16 @@ async def category_delete(category_id: int,
         )
 
 
-@router.get('/{category_id}/')
-async def get_category_product(category_id: int,
-                               category_crud: CategoryRepository = Depends(CategoryRepositoryDependencyMarker)):
-    return await category_crud.get_category_product(category_id)
+@router.get('/id={category_id}/page={page}/limit={limit}/')
+async def get_category_products(category_id: int,
+                                page: int, limit: int,
+                                category_crud: CategoryRepository = Depends(CategoryRepositoryDependencyMarker)):
+    try:
+        return await category_crud.get_category_products(category_id, page, limit)
+    except DBAPIError:
+        raise HTTPException(
+            status_code=404, detail=f"There isn't entry with id={category_id}"
+        )
 
 
 @router.put('/{category_id}/update/')

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Security, HTTPException
 from fastapi.responses import Response
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, DBAPIError
 
 from app.api.v1.dependencies.database_marker import BrandRepositoryDependencyMarker
 from app.services.database.repositories.product.brand_repository import BrandRepository
@@ -18,9 +18,21 @@ async def brand_create(brand: BrandDTO = CategoryBodySpec.item,
     return Response(status_code=201)
 
 
-@router.get('/categories/')
+@router.get('/all/')
 async def brand_get_all(brand_crud: BrandRepository = Depends(BrandRepositoryDependencyMarker)):
     return await brand_crud.get_brands()
+
+
+@router.get('/id={brand_id}/page={page}/limit={limit}/')
+async def get_brand_products(brand_id: int,
+                             page: int, limit: int,
+                             brand_crud: BrandRepository = Depends(BrandRepositoryDependencyMarker)):
+    try:
+        return await brand_crud.get_brand_products(brand_id, page, limit)
+    except DBAPIError:
+        raise HTTPException(
+            status_code=404, detail=f"There isn't entry with id={brand_id}"
+        )
 
 
 @router.delete('/delete/', dependencies=[Security(JWTSecurityHead(), scopes=['admin'])])
