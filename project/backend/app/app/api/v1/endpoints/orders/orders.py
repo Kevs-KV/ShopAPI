@@ -28,7 +28,7 @@ async def add_order(request: Request,
     total_price = cart.get_total_price()
     order_obj = await order_crud.add_order(order)
     for product in values:
-        await item_crud.add_order(order_id=order_obj.id, product_id=int(product), name=values[product]['name'],
+        await item_crud.add_item(order_id=order_obj.id, product_id=int(product), name=values[product]['name'],
                                   quantity=values[product]['quantity'], price=values[product]['price'])
     result_order = await order_crud.get_detail_order(order_obj.id)
     await order_alert_user(result_order, mail_config, total_price)

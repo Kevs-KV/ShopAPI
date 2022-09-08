@@ -7,7 +7,7 @@ from app.utils.database_utils import filter_payload
 class ItemRepository(Base):
     model = Item
 
-    async def add_order(self,
+    async def add_item(self,
                         order_id: int,
                         name: str,
                         product_id: int,
